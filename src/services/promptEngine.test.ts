@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { defaultSelections } from '../data/promptOptions'
-import { composeCollection, composeIdeaPrompt, composePrompt, remixPrompt } from './promptEngine'
+import { composeCollection, composeIdeaPrompt, composePrompt, composeZodiacCollection, remixPrompt } from './promptEngine'
 import { collectionVariants, randomizeSelections } from './randomizer'
 import { applyThemeDirection, zodiacThemes } from '../data/themes'
 
@@ -55,16 +55,27 @@ describe('structured prompt engine', () => {
 
   it('builds a zodiac collection without forcing one shared palette', () => {
     const variants = zodiacThemes.map((sign) => applyThemeDirection('zodiac', sign, { ...defaultSelections }, new Set(), () => 0))
-    const collection = composeCollection({ ...defaultSelections, concept: 'The Zodiac Embodied' }, 12, variants)
+    const collection = composeZodiacCollection(variants)
     expect(collection).toHaveLength(12)
     expect(collection[0].title).toMatch(/^Aries/)
     collection.forEach((item, index) => {
-      expect(item.prompt).toContain('ZODIAC COLLECTION DNA')
-      expect(item.prompt).toContain('Do not impose one shared collection palette')
+      expect(item.prompt).toContain('ZODIAC SERIES FRAMEWORK')
+      expect(item.prompt).toContain('Do not share or inherit a concept, palette')
       expect(item.prompt).toContain('ZODIAC EMBODIMENT')
       expect(item.prompt).toContain(zodiacThemes[index].toUpperCase())
       expect(item.prompt).toContain('MANDATORY SIGNATURE COLOR STORY')
       expect(item.prompt).toContain(item.selections.palette.toLowerCase())
+    })
+  })
+
+  it('keeps all zodiac concepts, palettes, and elements independent', () => {
+    const variants = zodiacThemes.map((sign, index) => applyThemeDirection('zodiac', sign, { ...defaultSelections }, new Set(), () => index / 12))
+    const collection = composeZodiacCollection(variants)
+    expect(new Set(collection.map((item) => item.concept)).size).toBe(12)
+    expect(new Set(collection.map((item) => item.selections.palette)).size).toBe(12)
+    collection.forEach((item) => {
+      expect(item.prompt).not.toContain('Maintain the shared concept')
+      expect(item.prompt).not.toContain('shared palette')
     })
   })
 
