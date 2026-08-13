@@ -77,6 +77,9 @@ export interface PromptSelections {
   supportingObject: string
   intensity: CreativeIntensity
   production: ProductionMode
+  themeCategory?: 'holidays' | 'zodiac'
+  theme?: string
+  themeDirection?: string
 }
 
 export interface BuiltPrompt {

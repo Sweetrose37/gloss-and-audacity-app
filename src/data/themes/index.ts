@@ -39,6 +39,27 @@ export interface ZodiacProfile {
   looks: readonly ZodiacLook[]
 }
 
+interface ZodiacEssence {
+  element: string
+  colors: string
+  embodiment: readonly string[]
+}
+
+export const zodiacEssences: Record<ZodiacSign, ZodiacEssence> = {
+  Aries: { element: 'cardinal fire', colors: 'vermilion red dominant, hot coral support, black grounding, and molten gold accents', embodiment: ['shape her braided hair and shoulder silhouette into abstract ram-horn arcs while fire ribbons launch from her stride', 'make her emerge as living ignition, with ember skin-light, a charging silhouette, and a ram form readable in negative space', 'transform her moto seams and cast shadow into a fearless ram profile surrounded by directional sparks'] },
+  Taurus: { element: 'fixed earth', colors: 'emerald green dominant, rich cocoa support, rose quartz accent, and antique copper highlights', embodiment: ['make her grounded stance become a lush sculptural landscape while curved hair and shoulders suggest bull strength', 'merge velvet texture, botanical growth, and an abstract bull silhouette into one serene living monument', 'let her become an earth guardian whose shadow forms powerful horns and whose garment roots into ornamental terrain'] },
+  Gemini: { element: 'mutable air', colors: 'luminous yellow dominant, electric cyan support, coral accent, and graphic black', embodiment: ['show two expressive aspects of the same woman in one anatomy-safe split portrait, connected by ribbons of conversation', 'make one heroine transform between mirrored fashion identities while airborne typography completes the twin illusion', 'use a double-exposure profile and reversible silhouette so she visibly embodies duality rather than standing beside twin symbols'] },
+  Cancer: { element: 'cardinal water', colors: 'pearl white dominant, moon-silver support, midnight indigo depth, and shell-pink accents', embodiment: ['turn her cocoon silhouette into luminous protective shell architecture while a tidal halo moves around her', 'make her the guardian of a moonlit inner world, with water and pearl armor growing from the figure', 'let her cape and shadow form an abstract crab-like sanctuary without placing a separate crab illustration'] },
+  Leo: { element: 'fixed fire', colors: 'solar gold dominant, saturated orange support, royal magenta accent, and deep burgundy shadow', embodiment: ['make her natural hair expand as a magnificent solar mane with a face-centered burst of warm rays', 'transform her cape, hair, and shadow into one regal lion-energy silhouette while she remains unmistakably human', 'portray her as a living sun whose sculptural gown radiates theatrical lionlike power through shape and light'] },
+  Virgo: { element: 'mutable earth', colors: 'sage green dominant, olive support, warm cream field, and terracotta-gold detail', embodiment: ['build her from elegant botanical diagrams, tailoring measurements, and harvest geometry that resolve into a precise heroine', 'make her body anchor an ordered living garden where garment seams become meticulous leaf and grain systems', 'portray her as intelligent earth made visible, surrounded by precise organic patterns rather than a maiden icon'] },
+  Libra: { element: 'cardinal air', colors: 'dusty blush dominant, airy lavender support, powder blue accent, and rose-gold balance points', embodiment: ['balance two unequal halves of her draped silhouette so her entire pose functions as living scales', 'make fabric, arms, and negative space create a poised equilibrium symbol around the heroine', 'portray her as embodied harmony, with mirrored atmosphere and asymmetrical fashion achieving perfect visual balance'] },
+  Scorpio: { element: 'fixed water', colors: 'oxblood dominant, ink black support, ultraviolet plum depth, and electric crimson accents', embodiment: ['transform her liquid-leather train and shadow into a sweeping scorpion-tail curve while her gaze remains the focal point', 'show her emerging through a jewel-dark molt, embodying secrecy, survival, and rebirth rather than wearing a sign costume', 'make her silhouette shift from armored darkness into luminous wings and a subtle scorpion form at the outer contour'] },
+  Sagittarius: { element: 'mutable fire', colors: 'cobalt blue dominant, royal purple support, saffron-gold accent, and bright turquoise flashes', embodiment: ['make her full-body motion become a living arrow, with coat, gaze, and typography all aimed beyond the frame', 'portray her as a celestial archer through pose and sweeping light trails without placing a separate bow prop', 'turn her travel silhouette into a horizon-crossing centaur-inspired rhythm using fabric and shadow, never hybrid anatomy'] },
+  Capricorn: { element: 'cardinal earth', colors: 'charcoal dominant, espresso support, forest green depth, and antique gold highlights', embodiment: ['make her architectural silhouette rise like a mountain summit while an abstract sea-goat curve lives in the coat hem', 'portray her as the builder and the mountain, with tailored planes ascending into monumental terrain', 'let her grounded stance, cape, and reflection create a disciplined climb from deep water to a gilded peak'] },
+  Aquarius: { element: 'fixed air', colors: 'electric cyan dominant, ultramarine support, ultraviolet accent, and liquid silver highlights', embodiment: ['make streams of ideas and color pour from her hands and modular garment as futuristic airborne ribbons', 'portray her as a human transmitter of the future, with wave patterns, floating fashion modules, and community light', 'turn her silhouette into an inventive water-bearer metaphor where luminous knowledge—not literal water—flows into the world'] },
+  Pisces: { element: 'mutable water', colors: 'sea-glass aqua dominant, deep teal support, dreamy lilac accent, and opalescent coral highlights', embodiment: ['make her organza body silhouette flow into two circling currents that suggest fish through negative space', 'portray her as a lucid ocean dream, with hair, gown, and reflection becoming one fluid imaginative ecosystem', 'let two contrasting dream versions of her orbit through waterlike fabric while preserving one clear primary figure'] },
+}
+
 export const zodiacProfiles: Record<ZodiacSign, ZodiacProfile> = {
   Aries: {
     concept: 'Aries as kinetic fire and fearless first-move energy, expressed through a commanding Black fashion heroine and abstract sparks rather than literal zodiac clip art',
@@ -172,16 +193,22 @@ export function applyThemeDirection(
   random: () => number = Math.random,
 ): PromptSelections {
   const next = { ...current }
+  delete next.themeCategory
+  delete next.theme
+  delete next.themeDirection
   const set = <K extends PromptField>(field: K, value: PromptSelections[K]) => {
     if (!locked.has(field)) next[field] = value
   }
 
   if (category !== 'zodiac' || !(theme in zodiacProfiles)) {
     set('concept', themeConcept(category, theme))
+    next.themeCategory = category
+    next.theme = theme
     return next
   }
 
   const profile = zodiacProfiles[theme as ZodiacSign]
+  const essence = zodiacEssences[theme as ZodiacSign]
   const availableLooks = profile.looks.filter((item) => item.fashion !== current.fashion)
   const look = pick(availableLooks.length ? availableLooks : profile.looks, random)
   set('concept', profile.concept)
@@ -192,5 +219,8 @@ export function applyThemeDirection(
   set('palette', look.palette)
   set('mood', look.mood)
   set('visualTwist', look.visualTwist)
+  next.themeCategory = 'zodiac'
+  next.theme = theme
+  next.themeDirection = `${theme.toUpperCase()} EMBODIMENT — This Black woman is the original artistic personification of ${theme}, not merely a model wearing themed clothing. ${pick(essence.embodiment, random)}. ELEMENT — ${essence.element}. MANDATORY SIGNATURE COLOR STORY — ${essence.colors}. These colors must visibly dominate the character, atmosphere, typography, and major graphic shapes; do not replace them with a generic gold, black, or pink palette. Integrate the sign through anatomy-safe pose, hair silhouette, fashion construction, light, shadow, negative space, and environmental transformation. Avoid a separate clip-art zodiac badge, generic constellation backdrop, costume horns, or a woman simply posing beside the symbol.`
   return next
 }

@@ -30,6 +30,13 @@ export function ShakeBox({ selections, setSelections, onBuild, themeCategory, th
   const chooseCategory = (category: ThemeCategory | '') => {
     onThemeCategoryChange(category)
     onThemeChange('')
+    setSelections((current) => {
+      const next = { ...current }
+      delete next.themeCategory
+      delete next.theme
+      delete next.themeDirection
+      return next
+    })
     setLocked((current) => { const next = new Set(current); next.delete('concept'); return next })
   }
   const chooseTheme = (value: string) => {
