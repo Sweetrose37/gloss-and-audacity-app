@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { defaultSelections } from '../data/promptOptions'
-import { composeCollection, composeIdeaPrompt, composePrompt, composeZodiacCollection, remixPrompt } from './promptEngine'
+import { composeCollection, composeIdeaPrompt, composeIndependentCollection, composePrompt, composeZodiacCollection, remixPrompt } from './promptEngine'
 import { collectionVariants, randomizeSelections } from './randomizer'
 import { applyThemeDirection, zodiacThemes } from '../data/themes'
+import { buildIndependentCollectionVariants, isZodiacCollectionBrief } from '../engine/collectionLogic'
 
 describe('structured prompt engine', () => {
   it('preserves an exact custom phrase and includes every professional section', () => {
@@ -86,6 +87,28 @@ describe('structured prompt engine', () => {
       expect(item.selections.palette).toBe(scorpio.palette)
       expect(item.prompt).toContain('scorpio signature palette')
       expect(item.prompt).toContain('oxblood dominant')
+    })
+  })
+
+  it('treats a custom zodiac brief as independent signs, never shared DNA', () => {
+    expect(isZodiacCollectionBrief('An artistic zodiac collection')).toBe(true)
+    const variants = buildIndependentCollectionVariants(defaultSelections, 12, 'An artistic zodiac collection')
+    const collection = composeZodiacCollection(variants)
+    expect(new Set(collection.map((item) => item.selections.theme)).size).toBe(12)
+    expect(new Set(collection.map((item) => item.concept)).size).toBe(12)
+    expect(new Set(collection.map((item) => item.selections.palette)).size).toBe(12)
+    collection.forEach((item) => expect(item.prompt).not.toContain('Maintain the shared concept'))
+  })
+
+  it('uses a custom non-zodiac brief as inspiration rather than shared DNA', () => {
+    const brief = 'A collection about creative reinvention'
+    const variants = buildIndependentCollectionVariants(defaultSelections, 4, brief)
+    const collection = composeIndependentCollection(brief, variants)
+    expect(new Set(collection.map((item) => item.concept)).size).toBeGreaterThan(1)
+    expect(new Set(collection.map((item) => item.selections.palette)).size).toBeGreaterThan(1)
+    collection.forEach((item) => {
+      expect(item.prompt).toContain('Use this only as broad inspiration')
+      expect(item.prompt).toContain('not as a shared concept, shared palette')
     })
   })
 })

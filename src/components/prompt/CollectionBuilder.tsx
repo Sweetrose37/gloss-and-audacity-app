@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Layers3 } from 'lucide-react'
 import { collectionSizes } from '../../data/promptOptions'
-import { composeCollection, composeZodiacCollection } from '../../services/promptEngine'
-import { collectionVariants } from '../../services/randomizer'
+import { composeIndependentCollection, composeZodiacCollection } from '../../services/promptEngine'
 import type { BuiltPrompt, PromptSelections } from '../../types'
 import { ProductionToggle } from './ProductionToggle'
 import { IntensityControl } from './IntensityControl'
 import { applyThemeDirection, zodiacThemes } from '../../data/themes'
 import { randomizeSelections } from '../../services/randomizer'
+import { buildIndependentCollectionVariants, isZodiacCollectionBrief } from '../../engine/collectionLogic'
 
 interface CollectionProps { selections: PromptSelections; setSelections: (next: PromptSelections | ((current: PromptSelections) => PromptSelections)) => void; onBuildCollection: (results: BuiltPrompt[]) => void }
 
@@ -23,21 +23,22 @@ export function CollectionBuilder({ selections, setSelections, onBuildCollection
       onBuildCollection(composeZodiacCollection(variants))
       return
     }
-    onBuildCollection(composeCollection(base, size, collectionVariants(base, size, varyIntensity)))
+    const variants = buildIndependentCollectionVariants(base, size, concept, varyIntensity)
+    onBuildCollection(isZodiacCollectionBrief(concept) ? composeZodiacCollection(variants) : composeIndependentCollection(concept, variants))
   }
   return (
     <div className="workflow-body">
       <section className="panel idea-panel">
         <p className="panel-label">Collection DNA</p><h2>One point of view. A full creative family.</h2>
         <label className="field-label">Collection type</label>
-        <div className="size-grid collection-type-grid"><button className={collectionType === 'standard' ? 'active' : ''} onClick={() => setCollectionType('standard')}><strong>Custom</strong><span>Your shared concept</span></button><button className={collectionType === 'zodiac' ? 'active' : ''} onClick={() => setCollectionType('zodiac')}><strong>Full Zodiac</strong><span>All 12 embodied signs</span></button></div>
+        <div className="size-grid collection-type-grid"><button className={collectionType === 'standard' ? 'active' : ''} onClick={() => setCollectionType('standard')}><strong>Custom</strong><span>Independent designs</span></button><button className={collectionType === 'zodiac' ? 'active' : ''} onClick={() => setCollectionType('zodiac')}><strong>Full Zodiac</strong><span>All 12 embodied signs</span></button></div>
         {collectionType === 'zodiac' && <p className="zodiac-collection-note">Creates all 12 signs with protected individual palettes, elemental art direction, symbolic transformation, and coordinated typography. Each woman embodies her sign beyond the clothing.</p>}
         {collectionType === 'standard' && <>
-        <label className="field-label">Shared collection concept</label>
+        <label className="field-label">Creative brief <small>Inspiration only — never repeated as shared DNA</small></label>
         <textarea className="studio-textarea compact" value={concept} onChange={(event) => setConcept(event.target.value)} />
         <label className="field-label">Collection size</label>
         <div className="size-grid">{collectionSizes.map((count) => <button key={count} className={size === count ? 'active' : ''} onClick={() => setSize(count)}><strong>{count}</strong><span>prompts</span></button>)}</div>
-        <div className="dna-summary"><span>Shared style</span><strong>{selections.artStyle}</strong><span>Shared palette</span><strong>{selections.palette}</strong><span>Shared finish</span><strong>{selections.effects}</strong></div>
+        <p className="zodiac-collection-note custom-independent-note">Every prompt receives its own concept, palette, art style, typography, fashion, pose, and atmosphere. A zodiac or astrology brief automatically assigns distinct signs instead of repeating one concept.</p>
         </>}
         {collectionType === 'zodiac' && <div className="zodiac-independent-grid">{zodiacThemes.map((sign) => <span key={sign}>{sign}<small>Independent concept + palette</small></span>)}</div>}
         <IntensityControl value={selections.intensity} onChange={(intensity) => setSelections((current) => ({ ...current, intensity }))} />

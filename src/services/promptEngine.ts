@@ -105,3 +105,11 @@ export function composeZodiacCollection(variants: PromptSelections[]) {
     return built
   })
 }
+
+export function composeIndependentCollection(brief: string, variants: PromptSelections[]) {
+  return variants.map((variant, index) => {
+    const built = composePrompt(variant)
+    built.prompt = `CUSTOM COLLECTION BRIEF — ${brief}. Use this only as broad inspiration for the series, not as a shared concept, shared palette, or repeated scene. Design ${index + 1} of ${variants.length} must retain its own concept, colors, art style, typography, fashion, pose, expression, symbolism, and atmosphere defined below.\n\n${built.prompt}`
+    return built
+  })
+}
