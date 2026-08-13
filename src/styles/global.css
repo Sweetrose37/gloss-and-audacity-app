@@ -160,6 +160,75 @@ button:focus-visible, select:focus-visible { outline: 2px solid var(--pink); out
 .coming-panel { max-width: 850px; margin: auto; padding: 22px; color: #aca2a5; text-align: center; font-size: 11px; }
 .toast { position: fixed; z-index: 100; right: 20px; bottom: 20px; padding: 13px 18px; border: 1px solid #b43a69; border-radius: 8px; background: #24101a; box-shadow: 0 12px 35px #000; color: #ffb2cf; font-size: 11px; }
 
+/* Phase 2 prompt studio extends the approved visual system without changing the dashboard. */
+.prompt-studio { flex: 1; padding: 26px clamp(14px, 3vw, 48px) 42px; background: radial-gradient(circle at 72% 8%, rgba(103, 13, 50, .22), transparent 29%); }
+.studio-header { max-width: 1080px; margin: 0 auto 24px; }
+.studio-header > .panel-label { margin: 28px 0 4px; }
+.studio-header h1 { margin: 0; color: #edc76d; font: 500 clamp(42px, 6vw, 72px)/1 'Bodoni Moda', Georgia, serif; text-transform: uppercase; letter-spacing: -2px; }
+.studio-header > p:last-child { color: #c8bec1; margin: 10px 0 0; }
+.workflow-body, .final-prompt-wrap { max-width: 1080px; margin: auto; }
+.step-strip { display: flex; align-items: center; gap: 0; margin: 0 0 18px; }
+.step-strip span { position: relative; width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid #49313b; border-radius: 50%; background: #100d10; color: #70676a; font-size: 10px; }
+.step-strip span:not(:last-child)::after { content: ''; position: absolute; left: 33px; width: 30px; height: 1px; background: #49313b; }
+.step-strip span:not(:last-child) { margin-right: 30px; }
+.step-strip span.active { border-color: var(--pink); color: #ffd0e1; background: #5e1531; }
+.step-strip span.active::after { background: #9e2c59; }
+.builder-stack { display: grid; gap: 12px; }
+.builder-card { padding: 22px; }
+.builder-card-heading { display: flex; justify-content: space-between; gap: 20px; align-items: center; }
+.builder-card h2, .idea-panel h2, .shake-panel h2 { color: #fff3e8; font: 500 25px/1.15 'Bodoni Moda', Georgia, serif; text-transform: uppercase; margin: 2px 0 4px; }
+.builder-card-heading span, .idea-panel > p:not(.panel-label) { color: #a99fa2; font-size: 10px; }
+.surprise-inline { flex: none; display: flex; align-items: center; gap: 7px; border: 1px solid rgba(234,71,134,.38); border-radius: 99px; background: transparent; color: #f57daa; padding: 9px 13px; text-transform: uppercase; font-size: 8px; }
+.choice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
+.choice-grid button, .remix-grid button { min-height: 48px; border: 1px solid #3e3337; border-radius: 6px; background: linear-gradient(145deg, #171316, #0c0a0c); color: #ddd3d6; padding: 9px 12px; font-size: 10px; line-height: 1.35; }
+.choice-grid button.active, .remix-grid button.active { border-color: #d34278; background: linear-gradient(135deg, #661b37, #241018); color: #ffbdd6; box-shadow: inset 0 0 16px rgba(216,38,99,.13); }
+.studio-input, .studio-textarea { width: 100%; margin-top: 12px; border: 1px solid rgba(207,65,119,.5); border-radius: 7px; background: #09080a; color: #fff7ec; padding: 14px; resize: vertical; line-height: 1.55; }
+.studio-input { height: 48px; }
+.studio-textarea.compact { min-height: 85px; }
+.studio-textarea.large { min-height: 190px; font-size: 13px; }
+.workflow-nav { display: flex; justify-content: space-between; margin-top: 18px; }
+.workflow-nav .outline-button, .workflow-nav .primary-button { min-width: 135px; display: inline-flex; gap: 8px; align-items: center; justify-content: center; }
+button:disabled { opacity: .4; cursor: not-allowed; }
+.production-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 17px 0; }
+.production-choice button { padding: 15px; border: 1px solid #433238; border-radius: 7px; background: #0d0b0d; text-align: left; }
+.production-choice button.active { border-color: #d03a72; background: linear-gradient(135deg, #5d1632, #1b0e14); }
+.production-choice strong { display: block; color: #efc869; text-transform: uppercase; font-size: 12px; }
+.production-choice span { display: block; color: #ada3a6; margin-top: 4px; font-size: 9px; }
+.shake-panel, .idea-panel { padding: 25px; }
+.shake-intro { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.shake-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.shake-choice { min-height: 82px; padding: 12px; border: 1px solid #3b3034; border-radius: 7px; background: #0c0a0c; text-align: left; }
+.shake-choice > span { display: block; color: var(--pink); text-transform: uppercase; font-size: 8px; }
+.shake-choice > strong { display: block; margin: 5px 0 8px; color: #eee5e7; font-size: 10px; font-weight: 500; }
+.shake-choice > em { display: flex; align-items: center; gap: 5px; color: #8e8588; font-size: 8px; font-style: normal; text-transform: uppercase; }
+.shake-choice.locked { border-color: #bc8c31; background: linear-gradient(145deg, #261c13, #100c0d); }
+.shake-choice.locked > em { color: #e7c25e; }
+.build-wide { width: 100%; margin-top: 5px; }
+.remix-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; margin: 16px 0; }
+.field-label { display: block; margin: 20px 0 7px; color: #e7c765; text-transform: uppercase; font-size: 9px; }
+.size-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.size-grid button { min-height: 70px; border: 1px solid #48353d; border-radius: 7px; background: #0d0b0d; }
+.size-grid button.active { border-color: var(--pink); background: #4d142c; }
+.size-grid strong { display: block; color: #f0c86a; font: 24px Georgia; }
+.size-grid span { color: #a69ca0; text-transform: uppercase; font-size: 8px; }
+.dna-summary { display: grid; grid-template-columns: 120px 1fr; gap: 7px 14px; margin: 18px 0; padding: 15px; background: #0b090b; border: 1px solid #33272c; border-radius: 7px; font-size: 9px; }
+.dna-summary span { color: var(--pink); text-transform: uppercase; }
+.dna-summary strong { font-weight: 400; color: #ded5d8; }
+.final-prompt-wrap > .back-button { margin-bottom: 15px; }
+.final-prompt { padding: clamp(20px, 4vw, 42px); }
+.final-prompt > h1 { color: #e9c46a; font: 500 clamp(38px, 5vw, 64px)/1 'Bodoni Moda', Georgia, serif; text-transform: uppercase; margin: 4px 0 8px; }
+.final-concept { color: #c6babe; font-size: 12px; }
+.prompt-output { margin: 28px 0 18px; padding: 20px; border: 1px solid rgba(204,62,115,.35); border-radius: 8px; background: #080708; }
+.prompt-output pre { color: #e4dcde; font: 11px/1.75 Montserrat, sans-serif; white-space: pre-wrap; word-break: break-word; margin: 12px 0 0; }
+.production-readout { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border: 1px solid rgba(214,161,49,.35); border-radius: 7px; background: #17120e; }
+.production-readout span { color: #b2a8ab; text-transform: uppercase; font-size: 9px; }
+.production-readout strong { color: #f0c663; }
+.final-actions { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 9px; margin-top: 16px; }
+.final-actions button { min-height: 45px; margin: 0; display: flex; align-items: center; justify-content: center; gap: 7px; }
+.collection-tabs { max-width: 1080px; margin: 0 auto 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+.collection-tabs button { width: 34px; height: 34px; border: 1px solid #49343c; border-radius: 50%; background: #110d0f; color: #b7adb0; }
+.collection-tabs button.active { border-color: var(--pink); background: #651734; color: white; }
+
 @media (max-width: 1200px) {
   .app-shell { grid-template-columns: 240px minmax(0, 1fr); }
   .brand-name { font-size: 29px; }
@@ -214,6 +283,18 @@ button:focus-visible, select:focus-visible { outline: 2px solid var(--pink); out
   .benefit-bar > div { border-right: 0; border-bottom: 1px solid rgba(210,157,53,.15); }
   .feature-page { padding: 18px 8px; }
   .feature-hero { padding: 40px 18px; }
+  .prompt-studio { padding: 18px 8px 30px; }
+  .studio-header { padding: 0 7px; }
+  .studio-header h1 { font-size: 42px; }
+  .builder-card, .shake-panel, .idea-panel, .final-prompt { padding: 16px; }
+  .builder-card-heading, .shake-intro { align-items: flex-start; flex-direction: column; }
+  .choice-grid, .shake-grid, .remix-grid { grid-template-columns: 1fr; }
+  .production-choice { grid-template-columns: 1fr; }
+  .size-grid { grid-template-columns: 1fr 1fr; }
+  .dna-summary { grid-template-columns: 1fr; }
+  .final-actions { grid-template-columns: 1fr 1fr; }
+  .prompt-output { padding: 13px; }
+  .prompt-output pre { font-size: 9px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -7,6 +7,7 @@ import { ProjectPanel } from './components/ProjectPanel'
 import { InspirationGallery } from './components/InspirationGallery'
 import { StyleSelectors } from './components/StyleSelectors'
 import { FeaturePage } from './components/FeaturePage'
+import { PromptStudio } from './components/prompt/PromptStudio'
 import { Footer } from './components/Footer'
 import { useLocalProject } from './hooks/useLocalProject'
 import { moods } from './data/appData'
@@ -41,6 +42,7 @@ export function App() {
     updateProject({ selectedMood: moods[(currentIndex + 1) % moods.length], selectedEffect: project.selectedEffect === 'Gold Glitter' ? 'Gold Foil' : 'Gold Glitter' })
     showToast('A fresh style combination is ready.')
   }
+  const creationModes: NavId[] = ['build', 'shake', 'idea', 'remix', 'collection']
 
   return (
     <div className="app-shell">
@@ -59,6 +61,8 @@ export function App() {
               <InspirationGallery />
             </aside>
           </main>
+        ) : creationModes.includes(activePage) ? (
+          <PromptStudio mode={activePage as 'build' | 'shake' | 'idea' | 'remix' | 'collection'} production={project.mode} onBack={() => navigate('home')} onModeChange={(mode) => updateProject({ mode })} notify={showToast} />
         ) : <FeaturePage page={activePage} onBack={() => navigate('home')} />}
         <Footer />
       </div>

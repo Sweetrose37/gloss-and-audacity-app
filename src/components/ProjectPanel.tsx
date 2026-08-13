@@ -21,7 +21,7 @@ export function ProjectPanel({ project, savedAt, onSave, onCopy, onExport }: Pro
       <div className="progress"><span style={{ width: `${percent}%` }} /></div>
       <button className="gold-button" onClick={onCopy}>View Full Prompt <Copy size={20} /></button>
       <div className="project-actions">
-        <button onClick={onCopy}><Sparkles /><span>Create<br />Design</span></button>
+        <button onClick={onCopy}><Sparkles /><span>Copy<br />Prompt</span></button>
         <button onClick={onSave}><Heart /><span>{savedAt ? 'Saved' : 'Save'}<br />Project</span></button>
         <button onClick={onExport}><Download /><span>Export<br />Prompt</span></button>
       </div>
