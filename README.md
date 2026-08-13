@@ -35,12 +35,17 @@ Structured libraries now guide character diversity, Black hair construction, fas
 
 Every creation workflow supports Restrained, Polished, Bold, Extra, and Audacious direction. The selected level changes composition complexity, typography interaction, material count, fashion drama, pose energy, supporting-element limits, depth, contrast, density, negative space, and surface engineering. Polished is the default.
 
+## Phase 4 local prompt workspace
+
+Saved Prompts is a persistent local workspace with prompt cards, favorites, recent items, search, filters, sorting, full-detail views, private notes, safe duplication and deletion, remix handoff, plain and structured text export, persistent collection management, ordered collection membership, and JSON backup/import-and-merge. Workspace data stays in the browser; no account or backend is required.
+
 ## Structure
 
 - `src/components` — reusable dashboard and navigation surfaces
 - `src/data` — navigation, creative mode, gallery, and style-selector data
 - `src/data/*` — dedicated character, hair, fashion, composition, typography, palette, material, effect, concept, and wildcard libraries
 - `src/engine` — originality tracking, compatibility checks, Shake intelligence, and collection variation
+- `src/workspace` — validated workspace records, search/filter/sort, backup merge, exports, and safe collection membership operations
 - `src/hooks` — local project persistence
 - `src/services` — prompt composition and controlled randomization
 - `src/types` — shared application models

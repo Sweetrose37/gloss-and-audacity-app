@@ -87,6 +87,46 @@ export interface BuiltPrompt {
   createdAt: string
 }
 
+export type CreationMode = 'Build With Me' | 'Shake the Box' | 'I Have an Idea' | 'Remix My Prompt' | 'Collection Builder'
+
+export interface SavedPromptRecord extends BuiltPrompt {
+  updatedAt: string
+  favorite: boolean
+  notes: string
+  creationMode: CreationMode
+  collectionId?: string
+  collectionName?: string
+}
+
+export interface PromptCollectionRecord {
+  id: string
+  name: string
+  description: string
+  promptIds: string[]
+  sharedDna: string[]
+  production: ProductionMode
+  intensity: CreativeIntensity
+  createdAt: string
+  updatedAt: string
+}
+
+export interface WorkspaceBackup {
+  schema: 1
+  exportedAt: string
+  prompts: SavedPromptRecord[]
+  collections: PromptCollectionRecord[]
+}
+
+export type WorkspaceSort = 'newest' | 'oldest' | 'updated' | 'az' | 'za'
+
+export interface WorkspaceFilters {
+  production: 'All' | ProductionMode
+  intensity: 'All' | CreativeIntensity
+  creationMode: 'All' | CreationMode
+  status: 'All' | 'Favorites'
+  collection: 'All' | string
+}
+
 export type RemixControl =
   | 'strongerConcept' | 'differentCharacter' | 'differentArtStyle'
   | 'strongerTypography' | 'differentComposition' | 'differentPalette'

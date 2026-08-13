@@ -11,9 +11,10 @@ interface SidebarProps {
   onClose: () => void
   onModeChange: (mode: ProjectState['mode']) => void
   onSizeChange: (size: string) => void
+  savedCount?: number
 }
 
-export function Sidebar({ active, open, project, onNavigate, onClose, onModeChange, onSizeChange }: SidebarProps) {
+export function Sidebar({ active, open, project, onNavigate, onClose, onModeChange, onSizeChange, savedCount = 0 }: SidebarProps) {
   return (
     <>
       <button className="mobile-menu" aria-label="Open menu" onClick={onClose}>{open ? <X /> : <Menu />}</button>
@@ -25,7 +26,7 @@ export function Sidebar({ active, open, project, onNavigate, onClose, onModeChan
             const Icon = item.icon
             return (
               <button key={item.id} className={active === item.id ? 'active' : ''} onClick={() => onNavigate(item.id)}>
-                <Icon size={19} /> <span>{item.label}</span>
+                <Icon size={19} /> <span>{item.id === 'saved' ? 'Saved Prompts' : item.label}</span>{item.id === 'saved' && <b className="nav-count">{savedCount}</b>}
               </button>
             )
           })}

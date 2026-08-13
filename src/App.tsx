@@ -10,14 +10,18 @@ import { FeaturePage } from './components/FeaturePage'
 import { PromptStudio } from './components/prompt/PromptStudio'
 import { Footer } from './components/Footer'
 import { useLocalProject } from './hooks/useLocalProject'
+import { useWorkspace } from './hooks/useWorkspace'
+import { SavedWorkspace } from './components/workspace/SavedWorkspace'
 import { moods } from './data/appData'
-import type { NavId } from './types'
+import type { NavId, SavedPromptRecord } from './types'
 
 export function App() {
   const [activePage, setActivePage] = useState<NavId>('home')
   const [menuOpen, setMenuOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const { project, updateProject, saveProject, savedAt } = useLocalProject()
+  const workspace = useWorkspace()
+  const [remixSource, setRemixSource] = useState<SavedPromptRecord | null>(null)
 
   const prompt = useMemo(() => `${project.name} — ${project.mode} apparel graphic, ${project.size} at ${project.dpi} DPI. ${project.selectedMood} mood with ${project.selectedPalette} palette and ${project.selectedEffect} finish. Luxury fashion-editorial styling created for Black women.`, [project])
 
@@ -25,7 +29,8 @@ export function App() {
     setToast(message)
     window.setTimeout(() => setToast(null), 2200)
   }
-  const navigate = (page: NavId) => { setActivePage(page); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  const navigate = (page: NavId) => { if (page !== 'remix') setRemixSource(null); setActivePage(page); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  const remixSaved = (saved: SavedPromptRecord) => { setRemixSource(saved); setActivePage('remix'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const copyPrompt = async () => {
     try { await navigator.clipboard.writeText(prompt); showToast('Prompt copied to your clipboard.') }
     catch { showToast('Your full prompt is ready in the export file.') }
@@ -46,9 +51,9 @@ export function App() {
 
   return (
     <div className="app-shell">
-      <Sidebar active={activePage} open={menuOpen} project={project} onNavigate={navigate} onClose={() => setMenuOpen(!menuOpen)} onModeChange={(mode) => updateProject({ mode })} onSizeChange={(size) => updateProject({ size })} />
+      <Sidebar active={activePage} open={menuOpen} project={project} savedCount={workspace.prompts.length} onNavigate={navigate} onClose={() => setMenuOpen(!menuOpen)} onModeChange={(mode) => updateProject({ mode })} onSizeChange={(size) => updateProject({ size })} />
       <div className="app-column">
-        <Header onSurprise={surprise} />
+        <Header onSurprise={surprise} onFavorites={() => navigate('saved')} />
         {activePage === 'home' ? (
           <main className="dashboard">
             <div className="dashboard-main">
@@ -61,8 +66,10 @@ export function App() {
               <InspirationGallery />
             </aside>
           </main>
+        ) : activePage === 'saved' ? (
+          <SavedWorkspace prompts={workspace.prompts} collections={workspace.collections} onBack={() => navigate('home')} notify={showToast} onRemix={remixSaved} updatePrompt={workspace.updatePrompt} removePrompt={workspace.removePrompt} duplicatePrompt={workspace.duplicatePrompt} updateCollection={workspace.updateCollection} removeCollection={workspace.removeCollection} duplicateCollection={workspace.duplicateCollection} addToCollection={workspace.addToCollection} removeFromCollection={workspace.removeFromCollection} backup={workspace.backup} mergeBackup={workspace.mergeBackup} />
         ) : creationModes.includes(activePage) ? (
-          <PromptStudio mode={activePage as 'build' | 'shake' | 'idea' | 'remix' | 'collection'} production={project.mode} onBack={() => navigate('home')} onModeChange={(mode) => updateProject({ mode })} notify={showToast} />
+          <PromptStudio key={`${activePage}-${remixSource?.id || 'new'}`} mode={activePage as 'build' | 'shake' | 'idea' | 'remix' | 'collection'} production={project.mode} onBack={() => navigate('home')} onModeChange={(mode) => updateProject({ mode })} notify={showToast} initialRemixPrompt={remixSource?.prompt} onSavePrompt={workspace.saveBuiltPrompt} onSaveCollection={workspace.saveCollection} />
         ) : <FeaturePage page={activePage} onBack={() => navigate('home')} />}
         <Footer />
       </div>
