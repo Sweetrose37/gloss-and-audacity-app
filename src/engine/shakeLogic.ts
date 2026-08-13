@@ -4,9 +4,11 @@ import { ensureCompatible } from './compatibility'
 import { isNearDuplicate, isRecent, rememberSelections } from './originality'
 import { intensityLevels } from '../data/intensity'
 import type { CreativeIntensity } from '../types'
+import { applyCreativeDirection } from './creativeDirector'
 
 function choose(field: PromptField, current: string) {
-  const values = optionGroups.find((group) => group.field === field)?.options ?? []
+  const group = optionGroups.find((item) => item.field === field)
+  const values = group?.randomOptions ?? group?.options ?? []
   const fresh = values.filter((value) => value !== current && !isRecent(field, value))
   const pool = fresh.length ? fresh : values.filter((value) => value !== current)
   return pool[Math.floor(Math.random() * pool.length)] || current
@@ -22,6 +24,7 @@ export function intelligentShake(current: PromptSelections, locked = new Set<Pro
       const choices = intensityLevels.filter((level) => level !== current.intensity)
       candidate.intensity = choices[Math.floor(Math.random() * choices.length)] as CreativeIntensity
     }
+    candidate = applyCreativeDirection(candidate, locked)
     candidate = ensureCompatible(candidate)
     if (!isNearDuplicate(candidate)) break
   }

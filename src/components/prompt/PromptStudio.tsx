@@ -10,6 +10,7 @@ import { RemixBuilder } from './RemixBuilder'
 import { ShakeBox } from './ShakeBox'
 import { StudioHeader } from './StudioHeader'
 import { randomizeSelections } from '../../services/randomizer'
+import { applyThemeDirection, type ThemeCategory } from '../../data/themes'
 
 interface PromptStudioProps {
   mode: Extract<NavId, 'build' | 'shake' | 'idea' | 'remix' | 'collection'>
@@ -30,6 +31,8 @@ export function PromptStudio({ mode, production, onBack, onModeChange, notify, i
   const [remixSeed, setRemixSeed] = useState(initialRemixPrompt)
   const [savedOnce, setSavedOnce] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [shakeThemeCategory, setShakeThemeCategory] = useState<ThemeCategory | ''>('')
+  const [shakeTheme, setShakeTheme] = useState('')
   const effectiveMode = remixSeed ? 'remix' : mode
   const content = featurePages[effectiveMode]
   const build = (next: BuiltPrompt) => {
@@ -38,7 +41,10 @@ export function PromptStudio({ mode, production, onBack, onModeChange, notify, i
       setSavedOnce(false)
       setResult(next)
       onModeChange(next.production)
-      if (effectiveMode === 'shake') setSelections((current) => randomizeSelections(current, new Set(), false))
+      if (effectiveMode === 'shake') setSelections((current) => {
+        const randomized = randomizeSelections(current, new Set(), false)
+        return shakeThemeCategory && shakeTheme ? applyThemeDirection(shakeThemeCategory, shakeTheme, randomized) : randomized
+      })
       setIsGenerating(false)
     }, 180)
   }
@@ -62,7 +68,7 @@ export function PromptStudio({ mode, production, onBack, onModeChange, notify, i
     <main className="prompt-studio">
       <StudioHeader eyebrow={content.eyebrow} title={content.title} body={content.body} onBack={onBack} />
       {effectiveMode === 'build' && <BuildWithMe selections={selections} setSelections={setSelections} onBuild={build} />}
-      {effectiveMode === 'shake' && <ShakeBox selections={selections} setSelections={setSelections} onBuild={build} />}
+      {effectiveMode === 'shake' && <ShakeBox selections={selections} setSelections={setSelections} onBuild={build} themeCategory={shakeThemeCategory} theme={shakeTheme} onThemeCategoryChange={setShakeThemeCategory} onThemeChange={setShakeTheme} />}
       {effectiveMode === 'idea' && <IdeaBuilder selections={selections} setSelections={setSelections} onBuild={build} />}
       {effectiveMode === 'remix' && <RemixBuilder selections={selections} setSelections={setSelections} initialPrompt={remixSeed} onBuild={build} />}
       {effectiveMode === 'collection' && <CollectionBuilder selections={selections} setSelections={setSelections} onBuildCollection={buildCollection} />}
