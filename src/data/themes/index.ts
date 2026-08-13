@@ -216,7 +216,10 @@ export function applyThemeDirection(
   set('fashion', look.fashion)
   set('typography', look.typography)
   set('artStyle', look.artStyle)
-  set('palette', look.palette)
+  // Zodiac color identity is collection DNA, not an optional outfit accent.
+  // Keep the sign's actual palette field authoritative so Collection Builder,
+  // the COLOR prompt section, saved-project summaries, and exports all agree.
+  next.palette = `${theme} signature palette: ${essence.colors}`
   set('mood', look.mood)
   set('visualTwist', look.visualTwist)
   next.themeCategory = 'zodiac'

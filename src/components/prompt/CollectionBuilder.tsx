@@ -15,7 +15,7 @@ export function CollectionBuilder({ selections, setSelections, onBuildCollection
   const [size, setSize] = useState(4)
   const [concept, setConcept] = useState(selections.concept)
   const [varyIntensity, setVaryIntensity] = useState(false)
-  const [collectionType, setCollectionType] = useState<'standard' | 'zodiac'>('standard')
+  const [collectionType, setCollectionType] = useState<'standard' | 'zodiac'>(() => selections.themeCategory === 'zodiac' ? 'zodiac' : 'standard')
   const build = () => {
     const base = { ...selections, concept }
     if (collectionType === 'zodiac') {

@@ -67,8 +67,16 @@ describe('Shake theme categories', () => {
       expect(result.themeCategory).toBe('zodiac')
       expect(result.themeDirection).toContain('MANDATORY SIGNATURE COLOR STORY')
       expect(result.themeDirection).toContain(zodiacEssences[sign].colors)
+      expect(result.palette).toBe(`${sign} signature palette: ${zodiacEssences[sign].colors}`)
       expect(result.themeDirection).toContain('personification')
       expect(result.themeDirection).toContain('not merely a model wearing themed clothing')
     })
+  })
+
+  it('does not let a locked generic palette override zodiac colors', () => {
+    const result = applyThemeDirection('zodiac', 'Scorpio', { ...defaultSelections, palette: 'generic pink and gold' }, new Set(['palette']), () => 0)
+    expect(result.palette).toContain('Scorpio signature palette')
+    expect(result.palette).toContain('oxblood dominant')
+    expect(result.palette).not.toContain('generic pink and gold')
   })
 })
