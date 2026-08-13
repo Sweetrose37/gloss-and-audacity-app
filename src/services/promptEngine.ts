@@ -96,3 +96,12 @@ export function composeCollection(base: PromptSelections, count: number, variant
     return built
   })
 }
+
+export function composeZodiacCollection(variants: PromptSelections[]) {
+  return variants.map((variant, index) => {
+    const built = composePrompt(variant)
+    built.title = `${variant.theme || `Sign ${index + 1}`} — ${variant.phrase}`
+    built.prompt = `ZODIAC SERIES FRAMEWORK — Design ${index + 1} of ${variants.length}: ${variant.theme}. Keep only the premium finish, Black-women-centered point of view, and production quality consistent across the series. Do not share or inherit a concept, palette, element, silhouette, symbolism, typography system, fashion direction, or atmosphere from another sign. This design must be independently art-directed from its own zodiac identity below. The woman must personify the sign through the complete artwork—not merely model a themed outfit.\n\n${built.prompt}`
+    return built
+  })
+}
