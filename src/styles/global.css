@@ -252,6 +252,12 @@ button:disabled { opacity: .4; cursor: not-allowed; }
 .shake-panel, .idea-panel { padding: 25px; }
 .shake-intro { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
 .shake-slot-note { max-width: 650px; margin: 7px 0 0; color: #9f9599; font-size: 8px; line-height: 1.45; }
+.shake-theme-box { display: grid; grid-template-columns: minmax(240px, 1.4fr) 1fr 1fr; gap: 10px; align-items: end; margin-bottom: 13px; padding: 15px; border: 1px solid rgba(213, 165, 57, .34); border-radius: 8px; background: linear-gradient(135deg, rgba(50, 14, 29, .75), rgba(10, 9, 11, .92)); }
+.shake-theme-box h3 { margin: 2px 0 4px; color: #f0c96d; font: 500 20px/1.1 'Bodoni Moda', Georgia, serif; text-transform: uppercase; }
+.shake-theme-box p:not(.panel-label) { margin: 0; color: #a89da1; font-size: 8px; line-height: 1.45; }
+.shake-theme-box label { color: #dabd66; text-transform: uppercase; font-size: 8px; }
+.shake-theme-box select { width: 100%; height: 42px; margin-top: 6px; padding: 0 9px; border: 1px solid #59404a; border-radius: 6px; background: #0b090b; color: #f1e8e2; font-size: 9px; }
+.shake-theme-box select:disabled { color: #70676a; opacity: .75; }
 .shake-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .shake-choice { min-height: 82px; padding: 12px; border: 1px solid #3b3034; border-radius: 7px; background: #0c0a0c; text-align: left; }
 .shake-choice > span { display: block; color: var(--pink); text-transform: uppercase; font-size: 8px; }
@@ -465,6 +471,8 @@ button:disabled { opacity: .4; cursor: not-allowed; }
   .detail-actions { grid-template-columns: repeat(3, 1fr); }
   .production-layout { grid-template-columns: 1fr; }
   .production-rail { grid-template-columns: 1fr 1fr; }
+  .shake-theme-box { grid-template-columns: 1fr 1fr; }
+  .shake-theme-box > div { grid-column: 1 / -1; }
   .full-gallery { grid-template-columns: 1fr 1fr; }
 }
 
@@ -535,6 +543,8 @@ button:disabled { opacity: .4; cursor: not-allowed; }
   .guide-actions button { width: 100%; }
   .storage-alert { left: 8px; right: 8px; bottom: 8px; }
   .main-nav button, .workspace-tabs button, .row-actions button, .prompt-card-actions > button, .prompt-card-actions summary { min-height: 44px; }
+  .shake-theme-box { grid-template-columns: 1fr; }
+  .shake-theme-box > div { grid-column: auto; }
   .collection-prompt-row { grid-template-columns: 31px 1fr; }
   .row-actions { grid-column: 1 / -1; flex-wrap: wrap; }
   .row-actions button { flex: 1; justify-content: center; }
