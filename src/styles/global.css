@@ -230,6 +230,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-
 .zodiac-independent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 5px 0 20px; }
 .zodiac-independent-grid span { padding: 10px; border: 1px solid #46363c; border-radius: 6px; color: #f1c66f; font-size: 9px; text-transform: uppercase; }
 .zodiac-independent-grid small { display: block; margin-top: 3px; color: #9f9297; font-size: 7px; text-transform: none; }
+.field-label small { margin-left: 6px; color: #a7939b; font-size: 8px; font-weight: 400; text-transform: none; }
+.custom-independent-note { margin-top: 12px; }
 .studio-input, .studio-textarea { width: 100%; margin-top: 12px; border: 1px solid rgba(207,65,119,.5); border-radius: 7px; background: #09080a; color: #fff7ec; padding: 14px; resize: vertical; line-height: 1.55; }
 .studio-input { height: 48px; }
 .studio-textarea.compact { min-height: 85px; }
