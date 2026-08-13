@@ -9,6 +9,14 @@ interface StyleSelectorsProps {
 
 export function StyleSelectors({ project, onUpdate }: StyleSelectorsProps) {
   const paletteNames = ['Plum Champagne', 'Cocoa Gold']
+  const hairOptions = [
+    { name: 'Braids', symbol: '≋' },
+    { name: 'Locs', symbol: '〰' },
+    { name: 'Afro', symbol: '✺' },
+    { name: 'Bun', symbol: '●' },
+    { name: 'Curls', symbol: '∿' },
+    { name: 'Taper', symbol: '◒' },
+  ]
   return (
     <section className="panel style-section">
       <h2>Quick Style Selectors</h2>
@@ -22,7 +30,7 @@ export function StyleSelectors({ project, onUpdate }: StyleSelectorsProps) {
         <div className="selector-group hair-selector">
           <h3>Hair</h3>
           <div className="hair-grid">
-            {['Braids', 'Locs', 'Afro', 'Bun', 'Curls', 'Taper'].map((hair, index) => <button key={hair} aria-label={`Select ${hair}`} aria-pressed={project.selectedHair === hair} className={project.selectedHair === hair ? 'active' : ''} onClick={() => onUpdate({ selectedHair: hair })}><span style={{ transform: `scale(${.82 + index * .03})` }}>♛</span></button>)}
+            {hairOptions.map((hair) => <button key={hair.name} aria-label={`Select ${hair.name}`} aria-pressed={project.selectedHair === hair.name} className={project.selectedHair === hair.name ? 'active' : ''} onClick={() => onUpdate({ selectedHair: hair.name })}><span className="hair-symbol" aria-hidden="true">{hair.symbol}</span><span className="hair-name">{hair.name}</span></button>)}
           </div>
         </div>
         <div className="selector-group mood-selector">
