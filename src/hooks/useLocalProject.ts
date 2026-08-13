@@ -1,14 +1,15 @@
 import { useCallback, useState } from 'react'
-import type { ProjectState } from '../types'
+import type { BuiltPrompt, ProjectState } from '../types'
 import { normalizeProject } from '../utils/normalization'
 
 const storageKey = 'ga-current-project'
+const promptStorageKey = 'ga-current-built-prompt'
 const initialProject: ProjectState = {
-  name: 'Side-Eye Flyby',
+  name: 'No Active Design',
   mode: 'DTF',
   size: '12 × 16 in',
   dpi: 300,
-  completedSections: 7,
+  completedSections: 0,
   totalSections: 8,
   selectedMood: 'Boss Energy',
   selectedPalette: 'Plum Champagne',
@@ -17,18 +18,53 @@ const initialProject: ProjectState = {
   selectedHair: 'Braids',
 }
 
+function readPrompt(): BuiltPrompt | null {
+  try {
+    const value = JSON.parse(localStorage.getItem(promptStorageKey) || 'null') as BuiltPrompt | null
+    return value?.id && value?.title && value?.prompt && value?.selections ? value : null
+  } catch { return null }
+}
+
+export function projectFromPrompt(current: ProjectState, prompt: BuiltPrompt): ProjectState {
+  return {
+    ...current,
+    name: prompt.title || prompt.concept || 'Untitled Design',
+    mode: prompt.production,
+    completedSections: current.totalSections,
+    selectedMood: prompt.selections.mood,
+    selectedPalette: prompt.selections.palette,
+    selectedEffect: prompt.selections.effects,
+    selectedSkinTone: prompt.selections.complexion,
+    selectedHair: prompt.selections.hair,
+  }
+}
+
 export function useLocalProject() {
   const [project, setProject] = useState<ProjectState>(() => {
     try {
       const saved = localStorage.getItem(storageKey)
-      return saved ? normalizeProject(JSON.parse(saved), initialProject) : initialProject
+      const normalized = saved ? normalizeProject(JSON.parse(saved), initialProject) : initialProject
+      return normalized.name === 'Side-Eye Flyby' && !readPrompt() ? { ...normalized, name: initialProject.name, completedSections: 0 } : normalized
     } catch {
       return initialProject
     }
   })
+  const [currentPrompt, setCurrentPromptState] = useState<BuiltPrompt | null>(readPrompt)
   const [savedAt, setSavedAt] = useState<string | null>(null)
   const updateProject = useCallback((changes: Partial<ProjectState>) => {
     setProject((current) => { const next = { ...current, ...changes }; try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch { /* Current screen state remains usable. */ } return next })
+  }, [])
+
+  const setCurrentPrompt = useCallback((prompt: BuiltPrompt) => {
+    setCurrentPromptState(prompt)
+    setProject((current) => {
+      const next = projectFromPrompt(current, prompt)
+      try {
+        localStorage.setItem(promptStorageKey, JSON.stringify(prompt))
+        localStorage.setItem(storageKey, JSON.stringify(next))
+      } catch { /* Current screen state remains usable. */ }
+      return next
+    })
   }, [])
 
   const saveProject = useCallback(() => {
@@ -36,5 +72,5 @@ export function useLocalProject() {
     catch { return false }
   }, [project])
 
-  return { project, updateProject, saveProject, savedAt }
+  return { project, currentPrompt, setCurrentPrompt, updateProject, saveProject, savedAt }
 }

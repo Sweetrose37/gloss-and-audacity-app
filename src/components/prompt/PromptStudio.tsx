@@ -22,9 +22,10 @@ interface PromptStudioProps {
   onSavePrompt: (prompt: BuiltPrompt, mode: CreationMode, asNew?: boolean) => SavedPromptRecord
   onSaveCollection: (name: string, description: string, prompts: BuiltPrompt[]) => { records: SavedPromptRecord[] }
   onOpenProduction: (prompt: BuiltPrompt) => void
+  onCurrentPrompt: (prompt: BuiltPrompt) => void
 }
 
-export function PromptStudio({ mode, production, onBack, onModeChange, notify, initialRemixPrompt = '', onSavePrompt, onSaveCollection, onOpenProduction }: PromptStudioProps) {
+export function PromptStudio({ mode, production, onBack, onModeChange, notify, initialRemixPrompt = '', onSavePrompt, onSaveCollection, onOpenProduction, onCurrentPrompt }: PromptStudioProps) {
   const { selections, setSelections, result, setResult } = usePromptStudio(production, notify)
   const [collection, setCollection] = useState<BuiltPrompt[]>([])
   const [collectionIndex, setCollectionIndex] = useState(0)
@@ -40,6 +41,7 @@ export function PromptStudio({ mode, production, onBack, onModeChange, notify, i
     window.setTimeout(() => {
       setSavedOnce(false)
       setResult(next)
+      onCurrentPrompt(next)
       onModeChange(next.production)
       if (effectiveMode === 'shake') setSelections((current) => {
         const randomized = randomizeSelections(current, new Set(), false)
@@ -48,7 +50,7 @@ export function PromptStudio({ mode, production, onBack, onModeChange, notify, i
       setIsGenerating(false)
     }, 180)
   }
-  const buildCollection = (results: BuiltPrompt[]) => { setIsGenerating(true); window.setTimeout(() => { const saved = onSaveCollection(results[0]?.concept || 'Untitled Collection', 'Created in Collection Builder', results); setCollection(saved.records); setCollectionIndex(0); setResult(saved.records[0]); setSavedOnce(true); onModeChange(saved.records[0].production); setIsGenerating(false); notify('Collection and prompts saved locally.') }, 180) }
+  const buildCollection = (results: BuiltPrompt[]) => { setIsGenerating(true); window.setTimeout(() => { const saved = onSaveCollection(results[0]?.concept || 'Untitled Collection', 'Created in Collection Builder', results); setCollection(saved.records); setCollectionIndex(0); setResult(saved.records[0]); onCurrentPrompt(saved.records[0]); setSavedOnce(true); onModeChange(saved.records[0].production); setIsGenerating(false); notify('Collection and prompts saved locally.') }, 180) }
   const reset = () => { setResult(null); setCollection([]); setRemixSeed(''); setSavedOnce(false) }
   const copy = async () => { if (!result) return; try { await navigator.clipboard.writeText(result.prompt); notify('Prompt copied to your clipboard.') } catch { notify('Copy was blocked by your browser.') } }
   const creationMode: CreationMode = ({ build: 'Build With Me', shake: 'Shake the Box', idea: 'I Have an Idea', remix: 'Remix My Prompt', collection: 'Collection Builder' } as const)[effectiveMode]
@@ -59,7 +61,7 @@ export function PromptStudio({ mode, production, onBack, onModeChange, notify, i
 
   if (result) return (
     <main className="prompt-studio">
-      {collection.length > 1 && <div className="collection-tabs">{collection.map((item, index) => <button key={item.id} className={index === collectionIndex ? 'active' : ''} onClick={() => { setCollectionIndex(index); setResult(item) }}>{index + 1}</button>)}</div>}
+      {collection.length > 1 && <div className="collection-tabs">{collection.map((item, index) => <button key={item.id} className={index === collectionIndex ? 'active' : ''} onClick={() => { setCollectionIndex(index); setResult(item); onCurrentPrompt(item) }}>{index + 1}</button>)}</div>}
       <PromptResultView result={result} onCopy={copy} onSave={save} onRemix={remix} onAnother={reset} onBack={effectiveMode === 'shake' ? undefined : reset} onProduction={() => onOpenProduction(result)} saveLabel={savedOnce ? 'Saved' : remixSeed ? 'Save As New' : 'Save Prompt'} anotherLabel={effectiveMode === 'shake' ? 'Replace With New Shake' : 'Build Another'} />
     </main>
   )
