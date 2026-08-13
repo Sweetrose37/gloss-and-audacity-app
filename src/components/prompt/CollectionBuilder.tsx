@@ -8,6 +8,7 @@ import { IntensityControl } from './IntensityControl'
 import { applyThemeDirection, zodiacThemes } from '../../data/themes'
 import { randomizeSelections } from '../../services/randomizer'
 import { buildIndependentCollectionVariants, isZodiacCollectionBrief } from '../../engine/collectionLogic'
+import { applyCollectionAgePlan } from '../../data/characters'
 
 interface CollectionProps { selections: PromptSelections; setSelections: (next: PromptSelections | ((current: PromptSelections) => PromptSelections)) => void; onBuildCollection: (results: BuiltPrompt[]) => void }
 
@@ -19,7 +20,7 @@ export function CollectionBuilder({ selections, setSelections, onBuildCollection
   const build = () => {
     const base = { ...selections, concept }
     if (collectionType === 'zodiac') {
-      const variants = zodiacThemes.map((sign) => applyThemeDirection('zodiac', sign, randomizeSelections(base, new Set(), true)))
+      const variants = applyCollectionAgePlan(zodiacThemes.map((sign) => applyThemeDirection('zodiac', sign, randomizeSelections(base, new Set(), true))))
       onBuildCollection(composeZodiacCollection(variants))
       return
     }

@@ -5,8 +5,10 @@ import { isNearDuplicate, isRecent, rememberSelections } from './originality'
 import { intensityLevels } from '../data/intensity'
 import type { CreativeIntensity } from '../types'
 import { applyCreativeDirection } from './creativeDirector'
+import { chooseBalancedAge } from '../data/characters'
 
 function choose(field: PromptField, current: string) {
+  if (field === 'age') return chooseBalancedAge(current)
   const group = optionGroups.find((item) => item.field === field)
   const values = group?.randomOptions ?? group?.options ?? []
   const fresh = values.filter((value) => value !== current && !isRecent(field, value))
