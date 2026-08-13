@@ -2,6 +2,7 @@ import type { PromptField, PromptSelections } from '../types'
 import { intelligentShake } from './shakeLogic'
 import { adjacentIntensity } from '../data/intensity'
 import { applyThemeDirection, zodiacThemes } from '../data/themes'
+import { applyCollectionAgePlan } from '../data/characters'
 
 const sharedFields = new Set<PromptField>(['concept', 'artStyle', 'palette', 'effects'])
 
@@ -15,7 +16,7 @@ export function buildCollectionVariants(base: PromptSelections, count: number, v
       : base.intensity
     variants.push({ ...current, concept: base.concept, artStyle: base.artStyle, palette: base.palette, effects: base.effects, production: base.production, intensity })
   }
-  return variants
+  return applyCollectionAgePlan(variants)
 }
 
 export function isZodiacCollectionBrief(brief: string) {
@@ -24,11 +25,12 @@ export function isZodiacCollectionBrief(brief: string) {
 
 export function buildIndependentCollectionVariants(base: PromptSelections, count: number, brief: string, varyAdjacent = false) {
   if (isZodiacCollectionBrief(brief)) {
-    return zodiacThemes.slice(0, count).map((sign, index) => {
+    const variants = zodiacThemes.slice(0, count).map((sign, index) => {
       const randomized = intelligentShake(base, new Set())
       const directed = applyThemeDirection('zodiac', sign, randomized)
       return { ...directed, production: base.production, intensity: varyAdjacent && index > 0 ? adjacentIntensity(base.intensity, index % 3 === 1 ? -1 : 1) : base.intensity }
     })
+    return applyCollectionAgePlan(variants)
   }
 
   const variants: PromptSelections[] = []
@@ -41,5 +43,5 @@ export function buildIndependentCollectionVariants(base: PromptSelections, count
       intensity: varyAdjacent && index > 0 ? adjacentIntensity(base.intensity, index % 3 === 1 ? -1 : 1) : base.intensity,
     })
   }
-  return variants
+  return applyCollectionAgePlan(variants)
 }

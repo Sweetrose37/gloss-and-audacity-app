@@ -42,3 +42,66 @@ export const characterProfiles: CharacterProfile[] = characterTraits.ages.map((a
   expression: characterTraits.expressions[(index + 1) % characterTraits.expressions.length],
   energy: characterTraits.energies[(index + 2) % characterTraits.energies.length],
 }))
+
+export const ageDistribution = [
+  { age: characterTraits.ages[0], weight: 12 },
+  { age: characterTraits.ages[1], weight: 13 },
+  { age: characterTraits.ages[2], weight: 30 },
+  { age: characterTraits.ages[3], weight: 25 },
+  { age: characterTraits.ages[4], weight: 10 },
+  { age: characterTraits.ages[5], weight: 5 },
+  { age: characterTraits.ages[6], weight: 3 },
+  { age: characterTraits.ages[7], weight: 2 },
+] as const
+
+export function chooseBalancedAge(current = '', random: () => number = Math.random) {
+  const available = ageDistribution.filter((item) => item.age !== current)
+  const total = available.reduce((sum, item) => sum + item.weight, 0)
+  let point = random() * total
+  for (const item of available) {
+    point -= item.weight
+    if (point < 0) return item.age
+  }
+  return available.at(-1)?.age || characterTraits.ages[2]
+}
+
+type AgeBand = '20s' | '30s' | '40s' | '50s' | '60plus'
+
+// A 20-design planning cycle: 25% 20s, 30% 30s, 25% 40s,
+// 10% 50s, and 10% across 60s–80s. Prefixes remain balanced for
+// common 4, 6, 8, and 12-design collection sizes.
+const collectionAgeBands: AgeBand[] = [
+  '20s', '30s', '40s', '20s', '30s', '40s', '50s', '30s', '20s', '40s',
+  '60plus', '30s', '20s', '40s', '50s', '30s', '20s', '40s', '60plus', '30s',
+]
+
+const agesByBand: Record<AgeBand, readonly string[]> = {
+  '20s': characterTraits.ages.slice(0, 2),
+  '30s': [characterTraits.ages[2]],
+  '40s': [characterTraits.ages[3]],
+  '50s': [characterTraits.ages[4]],
+  '60plus': characterTraits.ages.slice(5),
+}
+
+export function buildCollectionAgePlan(count: number, random: () => number = Math.random) {
+  const usage: Record<AgeBand, number> = { '20s': 0, '30s': 0, '40s': 0, '50s': 0, '60plus': 0 }
+  const startingChoice: Record<AgeBand, number> = {
+    '20s': Math.floor(random() * agesByBand['20s'].length),
+    '30s': 0,
+    '40s': 0,
+    '50s': 0,
+    '60plus': Math.floor(random() * agesByBand['60plus'].length),
+  }
+  return Array.from({ length: count }, (_, index) => {
+    const band = collectionAgeBands[index % collectionAgeBands.length]
+    const choices = agesByBand[band]
+    const age = choices[(startingChoice[band] + usage[band]) % choices.length]
+    usage[band] += 1
+    return age
+  })
+}
+
+export function applyCollectionAgePlan<T extends Pick<CharacterProfile, 'age'>>(items: T[], random: () => number = Math.random) {
+  const plan = buildCollectionAgePlan(items.length, random)
+  return items.map((item, index) => ({ ...item, age: plan[index] }))
+}

@@ -97,6 +97,7 @@ describe('structured prompt engine', () => {
     expect(new Set(collection.map((item) => item.selections.theme)).size).toBe(12)
     expect(new Set(collection.map((item) => item.concept)).size).toBe(12)
     expect(new Set(collection.map((item) => item.selections.palette)).size).toBe(12)
+    expect(collection.filter((item) => /early 20s|late 20s|30s|40s/.test(item.selections.age))).toHaveLength(10)
     collection.forEach((item) => expect(item.prompt).not.toContain('Maintain the shared concept'))
   })
 
