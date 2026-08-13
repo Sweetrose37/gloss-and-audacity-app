@@ -64,6 +64,17 @@ describe('structured prompt engine', () => {
       expect(item.prompt).toContain('ZODIAC EMBODIMENT')
       expect(item.prompt).toContain(zodiacThemes[index].toUpperCase())
       expect(item.prompt).toContain('MANDATORY SIGNATURE COLOR STORY')
+      expect(item.prompt).toContain(item.selections.palette.toLowerCase())
+    })
+  })
+
+  it('preserves a selected sign palette through a custom collection', () => {
+    const scorpio = applyThemeDirection('zodiac', 'Scorpio', { ...defaultSelections }, new Set(), () => 0)
+    const collection = composeCollection(scorpio, 4, collectionVariants(scorpio, 4))
+    collection.forEach((item) => {
+      expect(item.selections.palette).toBe(scorpio.palette)
+      expect(item.prompt).toContain('scorpio signature palette')
+      expect(item.prompt).toContain('oxblood dominant')
     })
   })
 })
