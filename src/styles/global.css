@@ -251,6 +251,7 @@ button:disabled { opacity: .4; cursor: not-allowed; }
 .adjacent-toggle small { grid-column: 2; color: #8f8589; font-size: 8px; }
 .shake-panel, .idea-panel { padding: 25px; }
 .shake-intro { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.shake-slot-note { max-width: 650px; margin: 7px 0 0; color: #9f9599; font-size: 8px; line-height: 1.45; }
 .shake-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .shake-choice { min-height: 82px; padding: 12px; border: 1px solid #3b3034; border-radius: 7px; background: #0c0a0c; text-align: left; }
 .shake-choice > span { display: block; color: var(--pink); text-transform: uppercase; font-size: 8px; }

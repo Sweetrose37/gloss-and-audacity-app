@@ -18,7 +18,7 @@ export function ShakeBox({ selections, setSelections, onBuild }: ShakeProps) {
   return (
     <div className="workflow-body">
       <section className="panel shake-panel">
-        <div className="shake-intro"><div><p className="panel-label">Controlled Randomization</p><h2>Lock what you love. Reshuffle the rest.</h2></div><button className="primary-button" onClick={shake}>Shake Again</button></div>
+        <div className="shake-intro"><div><p className="panel-label">Controlled Randomization</p><h2>Lock what you love. Reshuffle the rest.</h2><p className="shake-slot-note">One temporary design slot. Every new shake replaces the previous unsaved draft; saved prompts stay safe.</p></div><button className="primary-button" onClick={shake}>Replace Current Shake</button></div>
         <div className="shake-grid">
           {visibleFields.map((field) => {
             const group = optionGroups.find((item) => item.field === field)!

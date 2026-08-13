@@ -10,9 +10,10 @@ interface PromptResultViewProps {
   onBack?: () => void
   saveLabel?: string
   onProduction?: () => void
+  anotherLabel?: string
 }
 
-export function PromptResultView({ result, onCopy, onSave, onRemix, onAnother, onBack, onProduction, saveLabel = 'Save Prompt' }: PromptResultViewProps) {
+export function PromptResultView({ result, onCopy, onSave, onRemix, onAnother, onBack, onProduction, saveLabel = 'Save Prompt', anotherLabel = 'Build Another' }: PromptResultViewProps) {
   return (
     <div className="final-prompt-wrap">
       {onBack && <button className="back-button" onClick={onBack}><ArrowLeft size={18} /> Back to choices</button>}
@@ -30,7 +31,7 @@ export function PromptResultView({ result, onCopy, onSave, onRemix, onAnother, o
           <button className="outline-button" onClick={onSave}><Heart size={17} /> {saveLabel}</button>
           <button className="outline-button" onClick={onRemix}><RefreshCcw size={17} /> Remix</button>
           {onProduction && <button className="outline-button" onClick={onProduction}><Ruler size={17} /> Production Center</button>}
-          <button className="outline-button" onClick={onAnother}><RotateCcw size={17} /> Build Another</button>
+          <button className="outline-button" onClick={onAnother}><RotateCcw size={17} /> {anotherLabel}</button>
         </div>
       </section>
     </div>
