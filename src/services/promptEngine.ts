@@ -9,7 +9,7 @@ const productionDirection = {
   Sublimation: 'Develop a full, edge-to-edge composition that may include an atmospheric environment, expansive supporting textures, layered depth, and broader color transitions. Compose for continuous sublimation coverage while retaining a clear focal hierarchy.',
 }
 
-const safeguards = 'Maintain anatomically credible features and hands, authentic Black hair texture, intentional visual hierarchy, legible spelling, balanced negative space, and professional apparel-design clarity. Avoid copyrighted characters, brand marks, imitation artist signatures, visual clutter, tokenism, stereotypes, generic clip art, and accidental extra limbs or text.'
+const safeguards = 'Maintain anatomically credible features and hands, authentic Black hair texture, intentional visual hierarchy, legible spelling, balanced negative space, and professional apparel-design clarity. Keep the character and styling non-explicit: no nudity, exposed intimate anatomy, fetish framing, or sexualized depiction of young-looking people. Avoid copyrighted characters, brand marks, imitation artist signatures, visual clutter, tokenism, stereotypes, generic clip art, and accidental extra limbs or text.'
 
 function sentence(value: string) {
   return value.trim().replace(/[.!?]+$/, '')

@@ -9,7 +9,7 @@ const allowedContextWords: Record<string, string[]> = {
 }
 
 export function userRequested(term: string, selections: PromptSelections) {
-  const source = `${selections.concept} ${selections.phrase}`.toLowerCase()
+  const source = `${selections.concept} ${selections.phrase} ${selections.supportingObject}`.toLowerCase()
   const root = term.replace(/s$/, '')
   const cues = allowedContextWords[root] ?? [root]
   return cues.some((cue) => source.includes(cue))

@@ -8,12 +8,15 @@ import { paletteLibrary, describePalette } from './palettes'
 import { materialLibrary } from './materials'
 import { applicationZones, restrainedAccents } from './effects'
 import { wildcardPools } from './wildcards'
+import { artStyleLibrary, effectLibrary, phraseLibrary, poseLibrary } from './creativeKnowledge'
+import { conceptLibrary } from './concepts'
 
 export interface OptionGroup {
   field: PromptField
   label: string
   helper: string
   options: string[]
+  randomOptions?: string[]
   allowCustom?: boolean
 }
 
@@ -56,7 +59,7 @@ export const defaultSelections: PromptSelections = {
 }
 
 export const optionGroups: OptionGroup[] = [
-  { field: 'concept', label: 'Concept / Theme', helper: 'What truth or attitude should the design carry?', allowCustom: true, options: ['Unapologetic confidence and protected peace', 'Soft life with immovable standards', 'Ambition dressed in glamour', 'Joy as a radical declaration', 'Minding my business in luxury', 'Legacy, brilliance, and becoming'] },
+  { field: 'concept', label: 'Concept / Theme', helper: 'What truth or attitude should the design carry?', allowCustom: true, options: conceptLibrary.flatMap((territory) => territory.angles.map((angle) => `${territory.name}: ${angle}`)), randomOptions: conceptLibrary.filter((territory) => !territory.requestedOnly).flatMap((territory) => territory.angles.map((angle) => `${territory.name}: ${angle}`)) },
   { field: 'age', label: 'Woman / Age Direction', helper: 'Choose the life stage that serves the story.', options: characterTraits.ages },
   { field: 'complexion', label: 'Complexion', helper: 'Celebrate the full range of Black beauty.', options: characterTraits.complexions },
   { field: 'undertone', label: 'Undertone', helper: 'Refine how light and color meet the skin.', options: characterTraits.undertones },
@@ -70,14 +73,14 @@ export const optionGroups: OptionGroup[] = [
   { field: 'height', label: 'Height / Silhouette', helper: 'Shape the overall figure proportion.', options: characterTraits.heights },
   { field: 'expression', label: 'Expression', helper: 'Set the emotional temperature.', options: characterTraits.expressions },
   { field: 'energy', label: 'Personality Energy', helper: 'Give the character an inner point of view.', options: characterTraits.energies },
-  { field: 'pose', label: 'Pose / Movement', helper: 'Build energy into the silhouette.', options: ['Three-quarter turn looking over her shoulder', 'Power stance with hands at the waist', 'Elegant seated profile with crossed legs', 'Mid-stride with coat sweeping behind her', 'Head tilted upward in quiet triumph', 'Dancing turn with fabric in motion'] },
+  { field: 'pose', label: 'Pose / Movement', helper: 'Build energy into the silhouette.', options: [...poseLibrary] },
   { field: 'fashion', label: 'Fashion Direction', helper: 'Dress the concept with a point of view and restrained accessories.', options: fashionLibrary.map(describeFashion) },
-  { field: 'artStyle', label: 'Illustration Style', helper: 'Choose the image-making language.', options: ['Polished fashion-editorial digital illustration', 'Expressive hand-painted gouache portrait', 'Crisp retro screen-print illustration', 'Layered mixed-media collage', 'High-contrast ink and halftone portrait', 'Luxe Art Deco poster illustration'] },
-  { field: 'phrase', label: 'Exact Phrase', helper: 'Your wording is preserved character-for-character.', allowCustom: true, options: ['BUILT DIFFERENT', 'MINDING MY BUSINESS', 'SOFT LIFE. STRONG MIND.', 'UNBOTHERED BY OPINIONS', 'LEVEL UP LOADING', 'JOY LOOKS GOOD ON ME'] },
+  { field: 'artStyle', label: 'Illustration Style', helper: 'Choose the image-making language.', options: [...artStyleLibrary] },
+  { field: 'phrase', label: 'Exact Phrase', helper: 'Your wording is preserved character-for-character.', allowCustom: true, options: [...phraseLibrary] },
   { field: 'typography', label: 'Typography Behavior', helper: 'Decide how exact wording participates in the art.', options: typographyLibrary.map(describeTypography) },
   { field: 'composition', label: 'Composition', helper: 'Control hierarchy, overlap, negative space, and garment readability.', options: compositionLibrary.map(describeComposition) },
   { field: 'palette', label: 'Color Palette', helper: 'Use a curated dominant, support, accent, neutral, and optional metallic.', options: paletteLibrary.map(describePalette) },
-  { field: 'effects', label: 'Faux Effects', helper: 'Add finish without sacrificing the artwork.', options: ['Metallic gold foil, controlled paint splatter, and subtle halftone grain', 'Embossed leather texture with restrained gold leaf', 'Pearlescent highlights and soft airbrushed glow', 'Distressed screen-print texture with ink brayer marks', 'Gem-like accents with dimensional gloss', 'Paper collage edges with hand-drawn marks'] },
+  { field: 'effects', label: 'Faux Effects', helper: 'Add finish without sacrificing the artwork.', options: [...effectLibrary] },
   { field: 'heroMaterial', label: 'Hero Material', helper: 'One dominant tactile idea.', options: materialLibrary.map((item) => item.name) },
   { field: 'heroZone', label: 'Hero Material Zone', helper: 'Assign the material instead of stacking it everywhere.', options: [...applicationZones] },
   { field: 'supportMaterial', label: 'Supporting Material', helper: 'A quieter material that reinforces the hero.', options: materialLibrary.map((item) => item.name) },
@@ -90,6 +93,8 @@ export const optionGroups: OptionGroup[] = [
   { field: 'surfaceTreatment', label: 'Surface Treatment', helper: 'Unify the material finish.', options: wildcardPools.surfaceTreatment },
   { field: 'supportingObject', label: 'Supporting Object', helper: 'Use none or one intentional generic object.', options: wildcardPools.supportingObject },
 ]
+
+optionGroups.forEach((group) => { group.allowCustom = true })
 
 export const collectionSizes = [4, 6, 8, 12]
 
