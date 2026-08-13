@@ -10,6 +10,9 @@ export function normalizeSelections(value: unknown, productionFallback?: Product
   for (const key of Object.keys(defaultSelections) as (keyof PromptSelections)[]) {
     if (typeof source[key] === 'string') (normalized as unknown as Record<keyof PromptSelections, string>)[key] = source[key] as string
   }
+  if (source.themeCategory === 'holidays' || source.themeCategory === 'zodiac') normalized.themeCategory = source.themeCategory
+  if (typeof source.theme === 'string') normalized.theme = source.theme
+  if (typeof source.themeDirection === 'string') normalized.themeDirection = source.themeDirection
   if (!intensities.includes(normalized.intensity)) normalized.intensity = defaultSelections.intensity
   if (!productions.includes(normalized.production)) normalized.production = productionFallback ?? defaultSelections.production
   if (productionFallback) normalized.production = productionFallback

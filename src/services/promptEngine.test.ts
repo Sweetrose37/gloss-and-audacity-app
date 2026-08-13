@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { defaultSelections } from '../data/promptOptions'
 import { composeCollection, composeIdeaPrompt, composePrompt, remixPrompt } from './promptEngine'
 import { collectionVariants, randomizeSelections } from './randomizer'
+import { applyThemeDirection, zodiacThemes } from '../data/themes'
 
 describe('structured prompt engine', () => {
   it('preserves an exact custom phrase and includes every professional section', () => {
@@ -50,5 +51,19 @@ describe('structured prompt engine', () => {
     expect(new Set(collection.map((item) => item.selections.pose)).size).toBeGreaterThan(1)
     expect(new Set(collection.map((item) => item.prompt)).size).toBe(12)
     collection.forEach((item) => expect(item.prompt).toContain(defaultSelections.palette.toLowerCase()))
+  })
+
+  it('builds a zodiac collection without forcing one shared palette', () => {
+    const variants = zodiacThemes.map((sign) => applyThemeDirection('zodiac', sign, { ...defaultSelections }, new Set(), () => 0))
+    const collection = composeCollection({ ...defaultSelections, concept: 'The Zodiac Embodied' }, 12, variants)
+    expect(collection).toHaveLength(12)
+    expect(collection[0].title).toMatch(/^Aries/)
+    collection.forEach((item, index) => {
+      expect(item.prompt).toContain('ZODIAC COLLECTION DNA')
+      expect(item.prompt).toContain('Do not impose one shared collection palette')
+      expect(item.prompt).toContain('ZODIAC EMBODIMENT')
+      expect(item.prompt).toContain(zodiacThemes[index].toUpperCase())
+      expect(item.prompt).toContain('MANDATORY SIGNATURE COLOR STORY')
+    })
   })
 })

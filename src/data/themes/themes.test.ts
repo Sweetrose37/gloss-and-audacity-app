@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyThemeDirection, holidayThemes, themeConcept, themeOptions, zodiacProfiles, zodiacThemes } from '.'
+import { applyThemeDirection, holidayThemes, themeConcept, themeOptions, zodiacEssences, zodiacProfiles, zodiacThemes } from '.'
 import { defaultSelections } from '../promptOptions'
 
 describe('Shake theme categories', () => {
@@ -56,5 +56,19 @@ describe('Shake theme categories', () => {
     const next = applyThemeDirection('zodiac', 'Aquarius', first, new Set(), () => 0)
     expect(next.fashion).not.toBe(first.fashion)
     expect(next.phrase).not.toBe(first.phrase)
+  })
+
+  it('protects a unique elemental palette and embodied art direction for every sign', () => {
+    const colorStories = zodiacThemes.map((sign) => zodiacEssences[sign].colors)
+    expect(new Set(colorStories).size).toBe(12)
+    zodiacThemes.forEach((sign) => {
+      const result = applyThemeDirection('zodiac', sign, { ...defaultSelections }, new Set(), () => 0)
+      expect(result.theme).toBe(sign)
+      expect(result.themeCategory).toBe('zodiac')
+      expect(result.themeDirection).toContain('MANDATORY SIGNATURE COLOR STORY')
+      expect(result.themeDirection).toContain(zodiacEssences[sign].colors)
+      expect(result.themeDirection).toContain('personification')
+      expect(result.themeDirection).toContain('not merely a model wearing themed clothing')
+    })
   })
 })
