@@ -3,10 +3,11 @@ import { RefreshCcw } from 'lucide-react'
 import { remixOptions } from '../../data/promptOptions'
 import { remixPrompt } from '../../services/promptEngine'
 import type { BuiltPrompt, PromptSelections, RemixControl } from '../../types'
+import { IntensityControl } from './IntensityControl'
 
-interface RemixProps { selections: PromptSelections; initialPrompt?: string; onBuild: (result: BuiltPrompt) => void }
+interface RemixProps { selections: PromptSelections; setSelections: (next: PromptSelections | ((current: PromptSelections) => PromptSelections)) => void; initialPrompt?: string; onBuild: (result: BuiltPrompt) => void }
 
-export function RemixBuilder({ selections, initialPrompt = '', onBuild }: RemixProps) {
+export function RemixBuilder({ selections, setSelections, initialPrompt = '', onBuild }: RemixProps) {
   const [original, setOriginal] = useState(initialPrompt)
   const [controls, setControls] = useState<RemixControl[]>([])
   const toggle = (control: RemixControl) => setControls((current) => current.includes(control) ? current.filter((item) => item !== control) : [...current, control])
@@ -18,6 +19,7 @@ export function RemixBuilder({ selections, initialPrompt = '', onBuild }: RemixP
         <div className="remix-grid">
           {remixOptions.map(([id, label]) => <button key={id} className={controls.includes(id) ? 'active' : ''} onClick={() => toggle(id)}>{label}</button>)}
         </div>
+        <IntensityControl value={selections.intensity} onChange={(intensity) => setSelections((current) => ({ ...current, intensity }))} />
         <button className="primary-button build-wide" disabled={!original.trim()} onClick={() => onBuild(remixPrompt(original.trim(), controls, { ...selections, production: controls.includes('sublimationOptimization') ? 'Sublimation' : controls.includes('dtfOptimization') ? 'DTF' : selections.production }))}><RefreshCcw size={17} /> Remix Prompt</button>
       </section>
     </div>

@@ -51,6 +51,7 @@ export const defaultSelections: PromptSelections = {
   fashionEra: wildcardPools.fashionEra[4],
   surfaceTreatment: wildcardPools.surfaceTreatment[0],
   supportingObject: wildcardPools.supportingObject[0],
+  intensity: 'Polished',
   production: 'DTF',
 }
 

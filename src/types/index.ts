@@ -29,6 +29,7 @@ export interface ProjectState {
 }
 
 export type ProductionMode = 'DTF' | 'Sublimation'
+export type CreativeIntensity = 'Restrained' | 'Polished' | 'Bold' | 'Extra' | 'Audacious'
 
 export type PromptField =
   | 'concept' | 'age' | 'complexion' | 'undertone' | 'face' | 'hair'
@@ -72,6 +73,7 @@ export interface PromptSelections {
   fashionEra: string
   surfaceTreatment: string
   supportingObject: string
+  intensity: CreativeIntensity
   production: ProductionMode
 }
 

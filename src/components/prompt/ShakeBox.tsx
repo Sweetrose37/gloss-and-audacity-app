@@ -5,14 +5,16 @@ import { composePrompt } from '../../services/promptEngine'
 import { randomizeSelections } from '../../services/randomizer'
 import type { BuiltPrompt, PromptField, PromptSelections } from '../../types'
 import { ProductionToggle } from './ProductionToggle'
+import { IntensityControl } from './IntensityControl'
 
 interface ShakeProps { selections: PromptSelections; setSelections: (next: PromptSelections | ((current: PromptSelections) => PromptSelections)) => void; onBuild: (result: BuiltPrompt) => void }
 const visibleFields: PromptField[] = ['concept', 'age', 'complexion', 'hair', 'body', 'expression', 'pose', 'fashion', 'fashionEra', 'artStyle', 'phrase', 'typography', 'composition', 'palette', 'heroMaterial', 'supportMaterial', 'mood', 'visualTwist', 'surfaceTreatment', 'supportingObject']
 
 export function ShakeBox({ selections, setSelections, onBuild }: ShakeProps) {
   const [locked, setLocked] = useState<Set<PromptField>>(new Set())
+  const [intensityLocked, setIntensityLocked] = useState(false)
   const toggle = (field: PromptField) => setLocked((current) => { const next = new Set(current); if (next.has(field)) next.delete(field); else next.add(field); return next })
-  const shake = () => setSelections((current) => randomizeSelections(current, locked))
+  const shake = () => setSelections((current) => randomizeSelections(current, locked, intensityLocked))
   return (
     <div className="workflow-body">
       <section className="panel shake-panel">
@@ -24,6 +26,8 @@ export function ShakeBox({ selections, setSelections, onBuild }: ShakeProps) {
             return <button key={field} className={`shake-choice ${isLocked ? 'locked' : ''}`} onClick={() => toggle(field)}><span>{group.label}</span><strong>{selections[field]}</strong><em>{isLocked ? <Lock size={14} /> : <LockOpen size={14} />}{isLocked ? 'Locked' : 'Lock this'}</em></button>
           })}
         </div>
+        <IntensityControl value={selections.intensity} onChange={(intensity) => setSelections((current) => ({ ...current, intensity }))} onInteraction={() => setIntensityLocked(true)} />
+        <button className={`intensity-lock ${intensityLocked ? 'active' : ''}`} onClick={() => setIntensityLocked((value) => !value)}>{intensityLocked ? <Lock size={14} /> : <LockOpen size={14} />} {intensityLocked ? 'Intensity locked' : 'Lock intensity'}</button>
         <ProductionToggle value={selections.production} onChange={(production) => setSelections((current) => ({ ...current, production }))} />
         <button className="primary-button build-wide" onClick={() => onBuild(composePrompt(selections))}><Sparkles size={17} /> Build Prompt</button>
       </section>

@@ -31,6 +31,10 @@ Phase 2 uses local browser state only and is strictly a prompt-building studio. 
 
 Structured libraries now guide character diversity, Black hair construction, fashion styling, composition, exact typography, curated palettes, engineered faux materials, effect zoning, concept territories, and compatible creative wildcards. Session-level originality logic rotates major creative dimensions and collections preserve a small set of shared DNA while varying the execution.
 
+### Phase 3.1 Creative Intensity
+
+Every creation workflow supports Restrained, Polished, Bold, Extra, and Audacious direction. The selected level changes composition complexity, typography interaction, material count, fashion drama, pose energy, supporting-element limits, depth, contrast, density, negative space, and surface engineering. Polished is the default.
+
 ## Structure
 
 - `src/components` — reusable dashboard and navigation surfaces

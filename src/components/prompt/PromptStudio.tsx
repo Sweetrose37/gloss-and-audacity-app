@@ -45,7 +45,7 @@ export function PromptStudio({ mode, production, onBack, onModeChange, notify }:
       {effectiveMode === 'build' && <BuildWithMe selections={selections} setSelections={setSelections} onBuild={build} />}
       {effectiveMode === 'shake' && <ShakeBox selections={selections} setSelections={setSelections} onBuild={build} />}
       {effectiveMode === 'idea' && <IdeaBuilder selections={selections} setSelections={setSelections} onBuild={build} />}
-      {effectiveMode === 'remix' && <RemixBuilder selections={selections} initialPrompt={remixSeed} onBuild={build} />}
+      {effectiveMode === 'remix' && <RemixBuilder selections={selections} setSelections={setSelections} initialPrompt={remixSeed} onBuild={build} />}
       {effectiveMode === 'collection' && <CollectionBuilder selections={selections} setSelections={setSelections} onBuildCollection={buildCollection} />}
     </main>
   )

@@ -6,6 +6,7 @@ import { composePrompt } from '../../services/promptEngine'
 import type { BuiltPrompt, PromptSelections } from '../../types'
 import { OptionCard } from './OptionCard'
 import { ProductionToggle } from './ProductionToggle'
+import { IntensityControl } from './IntensityControl'
 
 interface BuildProps { selections: PromptSelections; setSelections: (next: PromptSelections | ((current: PromptSelections) => PromptSelections)) => void; onBuild: (result: BuiltPrompt) => void }
 
@@ -21,7 +22,7 @@ export function BuildWithMe({ selections, setSelections, onBuild }: BuildProps) 
       <div className="step-strip">{steps.map((_, index) => <span key={index} className={index <= step ? 'active' : ''}>{index + 1}</span>)}</div>
       <div className="builder-stack">
         {groups.map((group) => <OptionCard key={group.field} group={group} value={selections[group.field]} onChange={(value) => update(group.field, value)} onSurprise={() => surprise(group.field)} />)}
-        {step === steps.length - 1 && <section className="panel builder-card"><p className="panel-label">Production</p><h2>Choose Your Print Method</h2><ProductionToggle value={selections.production} onChange={(production) => setSelections((current) => ({ ...current, production }))} /></section>}
+        {step === steps.length - 1 && <section className="panel builder-card"><IntensityControl value={selections.intensity} onChange={(intensity) => setSelections((current) => ({ ...current, intensity }))} /><p className="panel-label">Production</p><h2>Choose Your Print Method</h2><ProductionToggle value={selections.production} onChange={(production) => setSelections((current) => ({ ...current, production }))} /></section>}
       </div>
       <div className="workflow-nav">
         <button className="outline-button" disabled={step === 0} onClick={() => setStep((value) => value - 1)}><ArrowLeft size={17} /> Back</button>
