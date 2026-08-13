@@ -9,7 +9,7 @@ import { ProductionToggle } from './ProductionToggle'
 
 interface BuildProps { selections: PromptSelections; setSelections: (next: PromptSelections | ((current: PromptSelections) => PromptSelections)) => void; onBuild: (result: BuiltPrompt) => void }
 
-const steps = [optionGroups.slice(0, 3), optionGroups.slice(3, 7), optionGroups.slice(7, 11), optionGroups.slice(11, 14), optionGroups.slice(14)]
+const steps = Array.from({ length: Math.ceil(optionGroups.length / 4) }, (_, index) => optionGroups.slice(index * 4, index * 4 + 4))
 
 export function BuildWithMe({ selections, setSelections, onBuild }: BuildProps) {
   const [step, setStep] = useState(0)

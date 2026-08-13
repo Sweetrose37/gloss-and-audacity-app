@@ -1,4 +1,7 @@
 import type { BuiltPrompt, PromptSelections, RemixControl } from '../types'
+import { materialLibrary, describeMaterial } from '../data/materials'
+import { noUnrequestedElements } from '../engine/compatibility'
+import { rememberSelections } from '../engine/originality'
 
 const productionDirection = {
   DTF: 'Prepare as isolated artwork on a transparent background with a cohesive outer silhouette, clean printable edges, strong value contrast, controlled fine detail, intentional negative space, and garment-scale readability. Keep all decorative elements connected or purposefully grouped for reliable DTF transfer.',
@@ -14,18 +17,20 @@ function sentence(value: string) {
 export function composePrompt(selections: PromptSelections, conceptOverride?: string): BuiltPrompt {
   const coreConcept = sentence(conceptOverride || selections.concept)
   const exactPhrase = selections.phrase
+  const hero = materialLibrary.find((item) => item.name === selections.heroMaterial) || materialLibrary[32]
+  const support = materialLibrary.find((item) => item.name === selections.supportMaterial) || materialLibrary[37]
   const prompt = [
-    `CONCEPT — Create an original premium apparel graphic centered on ${coreConcept.toLowerCase()}. The emotional direction should feel culturally fluent, assured, and fashion-forward rather than generic or literal.`,
-    `CHARACTER — Feature a ${sentence(selections.age).toLowerCase()} with a ${sentence(selections.complexion).toLowerCase()} and ${sentence(selections.undertone).toLowerCase()}. Give her a ${sentence(selections.face).toLowerCase()}, ${sentence(selections.hair).toLowerCase()}, and a ${sentence(selections.body).toLowerCase()}. Her expression is a ${sentence(selections.expression).toLowerCase()}, captured in a ${sentence(selections.pose).toLowerCase()}. Style her in ${sentence(selections.fashion).toLowerCase()}.`,
-    `COMPOSITION — Use a ${sentence(selections.composition).toLowerCase()}, rendered as ${sentence(selections.artStyle).toLowerCase()}. Establish one dominant focal point, purposeful supporting elements, and a silhouette that reads immediately on apparel.`,
-    `TYPOGRAPHY — Set the exact phrase “${exactPhrase}” with ${sentence(selections.typography).toLowerCase()}. Preserve the phrase exactly as written, including spelling, punctuation, capitalization, and word order; do not add, omit, or substitute words. Make the type an integrated compositional element rather than a detached caption.`,
+    `CONCEPT — Create an original premium apparel graphic centered on ${coreConcept.toLowerCase()}. Interpret it through ${sentence(selections.energy).toLowerCase()} with a ${sentence(selections.mood).toLowerCase()} emotional atmosphere and a specific visual metaphor, using the fashion intelligence and restraint of an experienced editorial art director rather than a literal or generic empowerment graphic. ${selections.visualTwist}.`,
+    `CHARACTER — Feature a ${sentence(selections.age).toLowerCase()} with a ${sentence(selections.complexion).toLowerCase()} and ${sentence(selections.undertone).toLowerCase()}. Her individual facial architecture combines a ${sentence(selections.face).toLowerCase()}, ${sentence(selections.eyes).toLowerCase()}, ${sentence(selections.nose).toLowerCase()}, ${sentence(selections.lips).toLowerCase()}, and ${sentence(selections.cheeks).toLowerCase()}. Give her ${sentence(selections.hair).toLowerCase()} and a ${sentence(selections.body).toLowerCase()} expressed through a ${sentence(selections.height).toLowerCase()}. Her expression is ${sentence(selections.expression).toLowerCase()}, captured in ${sentence(selections.pose).toLowerCase()}. Style her in ${sentence(selections.fashion).toLowerCase()}, filtered through ${sentence(selections.fashionEra).toLowerCase()} without branded or costume-like imitation.`,
+    `COMPOSITION — Use ${sentence(selections.composition).toLowerCase()}, rendered as ${sentence(selections.artStyle).toLowerCase()}. Establish one dominant focal point, purposeful supporting elements, and a silhouette that reads immediately on apparel.${selections.supportingObject === 'none' ? ' Do not add a supporting object.' : ` Include ${selections.supportingObject} only where it strengthens the concept and never as a text-bearing prop.`}`,
+    `TYPOGRAPHY — Set the exact phrase “${exactPhrase}” with ${sentence(selections.typography).toLowerCase()}. Preserve the phrase exactly as written, including spelling, punctuation, capitalization, and word order. Do not add, omit, substitute, repeat, or invent words; no decorative pseudo-text or secondary wording. Make the type an integrated compositional element rather than a detached caption.`,
     `COLOR — Build a disciplined palette of ${sentence(selections.palette).toLowerCase()}, using contrast and color placement to guide the eye and support skin-tone accuracy.`,
-    `EFFECTS — Apply ${sentence(selections.effects).toLowerCase()}. Effects must reinforce hierarchy and material richness without covering the face or compromising type legibility.`,
+    `EFFECTS — Apply ${sentence(selections.effects).toLowerCase()} through ${sentence(selections.surfaceTreatment).toLowerCase()} with disciplined zoning rather than stacking. HERO: ${describeMaterial(hero, selections.palette, selections.heroZone)}. SUPPORT: ${describeMaterial(support, selections.palette, selections.supportZone)}. ACCENT — ${selections.accentMaterial} restricted to the ${selections.accentZone}. Effects must reinforce hierarchy and material richness without covering the face or compromising type legibility.`,
     `PRODUCTION — ${productionDirection[selections.production]}`,
-    `QUALITY SAFEGUARDS — ${safeguards}`,
+    `QUALITY SAFEGUARDS — ${safeguards} ${noUnrequestedElements(selections)} Add no secondary wording, decorative words, pseudo-text, or writing on clothing, signs, accessories, or props unless explicitly supplied by the user.`,
   ].join('\n\n')
 
-  return {
+  const built = {
     id: crypto.randomUUID(),
     title: exactPhrase || coreConcept,
     concept: conceptOverride || selections.concept,
@@ -34,6 +39,8 @@ export function composePrompt(selections: PromptSelections, conceptOverride?: st
     selections: { ...selections },
     createdAt: new Date().toISOString(),
   }
+  rememberSelections(selections)
+  return built
 }
 
 export function composeIdeaPrompt(idea: string, selections: PromptSelections) {

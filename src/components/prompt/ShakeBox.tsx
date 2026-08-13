@@ -7,7 +7,7 @@ import type { BuiltPrompt, PromptField, PromptSelections } from '../../types'
 import { ProductionToggle } from './ProductionToggle'
 
 interface ShakeProps { selections: PromptSelections; setSelections: (next: PromptSelections | ((current: PromptSelections) => PromptSelections)) => void; onBuild: (result: BuiltPrompt) => void }
-const visibleFields: PromptField[] = ['concept', 'age', 'complexion', 'hair', 'body', 'expression', 'pose', 'fashion', 'artStyle', 'phrase', 'typography', 'composition', 'palette', 'effects']
+const visibleFields: PromptField[] = ['concept', 'age', 'complexion', 'hair', 'body', 'expression', 'pose', 'fashion', 'fashionEra', 'artStyle', 'phrase', 'typography', 'composition', 'palette', 'heroMaterial', 'supportMaterial', 'mood', 'visualTwist', 'surfaceTreatment', 'supportingObject']
 
 export function ShakeBox({ selections, setSelections, onBuild }: ShakeProps) {
   const [locked, setLocked] = useState<Set<PromptField>>(new Set())

@@ -33,7 +33,10 @@ export type ProductionMode = 'DTF' | 'Sublimation'
 export type PromptField =
   | 'concept' | 'age' | 'complexion' | 'undertone' | 'face' | 'hair'
   | 'body' | 'expression' | 'pose' | 'fashion' | 'artStyle' | 'phrase'
-  | 'typography' | 'composition' | 'palette' | 'effects'
+  | 'typography' | 'composition' | 'palette' | 'effects' | 'eyes' | 'nose'
+  | 'lips' | 'cheeks' | 'height' | 'energy' | 'heroMaterial' | 'supportMaterial'
+  | 'accentMaterial' | 'heroZone' | 'supportZone' | 'accentZone' | 'visualTwist'
+  | 'mood' | 'fashionEra' | 'surfaceTreatment' | 'supportingObject'
 
 export interface PromptSelections {
   concept: string
@@ -41,9 +44,15 @@ export interface PromptSelections {
   complexion: string
   undertone: string
   face: string
+  eyes: string
+  nose: string
+  lips: string
+  cheeks: string
   hair: string
   body: string
+  height: string
   expression: string
+  energy: string
   pose: string
   fashion: string
   artStyle: string
@@ -52,6 +61,17 @@ export interface PromptSelections {
   composition: string
   palette: string
   effects: string
+  heroMaterial: string
+  supportMaterial: string
+  accentMaterial: string
+  heroZone: string
+  supportZone: string
+  accentZone: string
+  visualTwist: string
+  mood: string
+  fashionEra: string
+  surfaceTreatment: string
+  supportingObject: string
   production: ProductionMode
 }
 

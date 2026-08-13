@@ -27,10 +27,16 @@ Phase 2 uses local browser state only and is strictly a prompt-building studio. 
 - Collection Builder — creates 4, 6, 8, or 12 coordinated prompts
 - Final Prompt — copy, locally save, remix, or start another prompt
 
+## Phase 3 creative intelligence
+
+Structured libraries now guide character diversity, Black hair construction, fashion styling, composition, exact typography, curated palettes, engineered faux materials, effect zoning, concept territories, and compatible creative wildcards. Session-level originality logic rotates major creative dimensions and collections preserve a small set of shared DNA while varying the execution.
+
 ## Structure
 
 - `src/components` — reusable dashboard and navigation surfaces
 - `src/data` — navigation, creative mode, gallery, and style-selector data
+- `src/data/*` — dedicated character, hair, fashion, composition, typography, palette, material, effect, concept, and wildcard libraries
+- `src/engine` — originality tracking, compatibility checks, Shake intelligence, and collection variation
 - `src/hooks` — local project persistence
 - `src/services` — prompt composition and controlled randomization
 - `src/types` — shared application models
