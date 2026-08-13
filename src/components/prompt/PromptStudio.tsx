@@ -23,20 +23,23 @@ interface PromptStudioProps {
 }
 
 export function PromptStudio({ mode, production, onBack, onModeChange, notify, initialRemixPrompt = '', onSavePrompt, onSaveCollection, onOpenProduction }: PromptStudioProps) {
-  const { selections, setSelections, result, setResult } = usePromptStudio(production)
+  const { selections, setSelections, result, setResult } = usePromptStudio(production, notify)
   const [collection, setCollection] = useState<BuiltPrompt[]>([])
   const [collectionIndex, setCollectionIndex] = useState(0)
   const [remixSeed, setRemixSeed] = useState(initialRemixPrompt)
   const [savedOnce, setSavedOnce] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
   const effectiveMode = remixSeed ? 'remix' : mode
   const content = featurePages[effectiveMode]
-  const build = (next: BuiltPrompt) => { setSavedOnce(false); setResult(next); onModeChange(next.production) }
-  const buildCollection = (results: BuiltPrompt[]) => { const saved = onSaveCollection(results[0]?.concept || 'Untitled Collection', 'Created in Collection Builder', results); setCollection(saved.records); setCollectionIndex(0); setResult(saved.records[0]); setSavedOnce(true); onModeChange(saved.records[0].production); notify('Collection and prompts saved locally.') }
+  const build = (next: BuiltPrompt) => { setIsGenerating(true); window.setTimeout(() => { setSavedOnce(false); setResult(next); onModeChange(next.production); setIsGenerating(false) }, 180) }
+  const buildCollection = (results: BuiltPrompt[]) => { setIsGenerating(true); window.setTimeout(() => { const saved = onSaveCollection(results[0]?.concept || 'Untitled Collection', 'Created in Collection Builder', results); setCollection(saved.records); setCollectionIndex(0); setResult(saved.records[0]); setSavedOnce(true); onModeChange(saved.records[0].production); setIsGenerating(false); notify('Collection and prompts saved locally.') }, 180) }
   const reset = () => { setResult(null); setCollection([]); setRemixSeed(''); setSavedOnce(false) }
   const copy = async () => { if (!result) return; try { await navigator.clipboard.writeText(result.prompt); notify('Prompt copied to your clipboard.') } catch { notify('Copy was blocked by your browser.') } }
   const creationMode: CreationMode = ({ build: 'Build With Me', shake: 'Shake the Box', idea: 'I Have an Idea', remix: 'Remix My Prompt', collection: 'Collection Builder' } as const)[effectiveMode]
   const save = () => { if (result) { const saved = onSavePrompt(result, creationMode, Boolean(remixSeed) && !savedOnce); setResult(saved); setSavedOnce(true); notify(remixSeed && !savedOnce ? 'Remix saved as a new prompt.' : 'Prompt saved locally.') } }
   const remix = () => { if (result) { setRemixSeed(result.prompt); setResult(null) } }
+
+  if (isGenerating) return <main className="prompt-studio generating-screen" aria-live="polite"><div className="panel generating-card"><span className="generating-mark">GA</span><p className="panel-label">Directing the Look…</p><h1>Adding the Audacity.</h1><p>Building your copy-ready production prompt.</p></div></main>
 
   if (result) return (
     <main className="prompt-studio">

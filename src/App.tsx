@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Header } from './components/Header'
 import { Sidebar } from './components/Sidebar'
 import { Hero } from './components/Hero'
@@ -13,6 +13,7 @@ import { useLocalProject } from './hooks/useLocalProject'
 import { useWorkspace } from './hooks/useWorkspace'
 import { SavedWorkspace } from './components/workspace/SavedWorkspace'
 import { ProductionCenter } from './components/production/ProductionCenter'
+import { onboardingStorageKey, QuickGuide } from './components/QuickGuide'
 import { moods } from './data/appData'
 import type { BuiltPrompt, NavId, SavedPromptRecord } from './types'
 
@@ -20,30 +21,34 @@ export function App() {
   const [activePage, setActivePage] = useState<NavId>('home')
   const [menuOpen, setMenuOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
+  const toastTimer = useRef<number | null>(null)
   const { project, updateProject, saveProject, savedAt } = useLocalProject()
   const workspace = useWorkspace()
   const [remixSource, setRemixSource] = useState<SavedPromptRecord | null>(null)
   const [productionPrompt, setProductionPrompt] = useState<BuiltPrompt | null>(null)
+  const [productionReturnPage, setProductionReturnPage] = useState<NavId>('home')
+  const [guideFirstVisit, setGuideFirstVisit] = useState(() => { try { return localStorage.getItem(onboardingStorageKey) !== 'true' } catch { return true } })
+  const [guideOpen, setGuideOpen] = useState(guideFirstVisit)
 
-  const prompt = useMemo(() => `${project.name} — ${project.mode} apparel graphic, ${project.size} at ${project.dpi} DPI. ${project.selectedMood} mood with ${project.selectedPalette} palette and ${project.selectedEffect} finish. Luxury fashion-editorial styling created for Black women.`, [project])
+  const prompt = useMemo(() => `${project.name} — ${project.mode} apparel graphic, ${project.size} at ${project.dpi} DPI. ${project.selectedMood} mood with ${project.selectedPalette} palette, ${project.selectedHair} hair direction, skin-tone reference ${project.selectedSkinTone}, and ${project.selectedEffect} finish. Luxury fashion-editorial styling created for Black women.`, [project])
 
   const showToast = (message: string) => {
+    if (toastTimer.current) window.clearTimeout(toastTimer.current)
     setToast(message)
-    window.setTimeout(() => setToast(null), 2200)
+    toastTimer.current = window.setTimeout(() => setToast(null), 3200)
   }
-  const navigate = (page: NavId) => { if (page !== 'remix') setRemixSource(null); if (page !== 'sizing') setProductionPrompt(null); setActivePage(page); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  const navigate = (page: NavId) => { if (page !== 'remix') setRemixSource(null); if (page === 'sizing' && activePage !== 'sizing') setProductionReturnPage(activePage); if (page !== 'sizing') setProductionPrompt(null); setActivePage(page); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const remixSaved = (saved: SavedPromptRecord) => { setRemixSource(saved); setActivePage('remix'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
-  const openProduction = (source: BuiltPrompt) => { setProductionPrompt(source); setActivePage('sizing'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  const openProduction = (source: BuiltPrompt) => { setProductionReturnPage(activePage); setProductionPrompt(source); setActivePage('sizing'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  const closeGuide = () => { try { localStorage.setItem(onboardingStorageKey, 'true') } catch { /* The guide can still close when storage is unavailable. */ } setGuideOpen(false); setGuideFirstVisit(false) }
+  const openGuide = () => { setGuideFirstVisit(false); setGuideOpen(true) }
   const copyPrompt = async () => {
     try { await navigator.clipboard.writeText(prompt); showToast('Prompt copied to your clipboard.') }
-    catch { showToast('Your full prompt is ready in the export file.') }
+    catch { showToast('Copy was blocked by your browser. Use Export Prompt instead.') }
   }
   const exportPrompt = () => {
-    const blob = new Blob([prompt], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url; link.download = 'side-eye-flyby-prompt.txt'; link.click(); URL.revokeObjectURL(url)
-    showToast('Prompt exported.')
+    try { const blob = new Blob([prompt], { type: 'text/plain' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'side-eye-flyby-prompt.txt'; link.click(); URL.revokeObjectURL(url); showToast('Prompt exported.') }
+    catch { showToast('Export failed. Copy the prompt instead, or check browser download permissions.') }
   }
   const surprise = () => {
     const currentIndex = moods.indexOf(project.selectedMood)
@@ -56,17 +61,17 @@ export function App() {
     <div className="app-shell">
       <Sidebar active={activePage} open={menuOpen} project={project} savedCount={workspace.prompts.length} onNavigate={navigate} onClose={() => setMenuOpen(!menuOpen)} onModeChange={(mode) => updateProject({ mode })} onSizeChange={(size) => updateProject({ size })} />
       <div className="app-column">
-        <Header onSurprise={surprise} onFavorites={() => navigate('saved')} />
+        <Header onSurprise={surprise} onFavorites={() => navigate('saved')} onHelp={openGuide} />
         {activePage === 'home' ? (
           <main className="dashboard">
             <div className="dashboard-main">
-              <Hero onStart={() => navigate('build')} />
+              <Hero onStart={() => navigate('build')} onGuide={openGuide} />
               <CreativeModes onSelect={navigate} />
               <StyleSelectors project={project} onUpdate={updateProject} />
             </div>
             <aside className="dashboard-rail">
-              <ProjectPanel project={project} savedAt={savedAt} onSave={() => { saveProject(); showToast('Project saved locally.') }} onCopy={copyPrompt} onExport={exportPrompt} />
-              <InspirationGallery />
+              <ProjectPanel project={project} savedAt={savedAt} onSave={() => showToast(saveProject() ? 'Project saved locally.' : 'Project could not be saved. Check browser storage permissions or available space.')} onCopy={copyPrompt} onExport={exportPrompt} />
+              <InspirationGallery onViewAll={() => navigate('gallery')} />
             </aside>
           </main>
         ) : activePage === 'saved' ? (
@@ -74,11 +79,13 @@ export function App() {
         ) : creationModes.includes(activePage) ? (
           <PromptStudio key={`${activePage}-${remixSource?.id || 'new'}`} mode={activePage as 'build' | 'shake' | 'idea' | 'remix' | 'collection'} production={project.mode} onBack={() => navigate('home')} onModeChange={(mode) => updateProject({ mode })} notify={showToast} initialRemixPrompt={remixSource?.prompt} onSavePrompt={workspace.saveBuiltPrompt} onSaveCollection={workspace.saveCollection} onOpenProduction={openProduction} />
         ) : activePage === 'sizing' ? (
-          <ProductionCenter prompt={productionPrompt} savedPrompts={workspace.prompts} onBack={() => navigate('home')} notify={showToast} onSaveAsNew={(next, mode) => { workspace.saveBuiltPrompt(next, mode, true) }} />
+          <ProductionCenter prompt={productionPrompt} savedPrompts={workspace.prompts} onBack={() => navigate(productionReturnPage)} notify={showToast} onSaveAsNew={(next, mode) => { workspace.saveBuiltPrompt(next, mode, true) }} />
         ) : <FeaturePage page={activePage} onBack={() => navigate('home')} />}
         <Footer />
       </div>
       {toast && <div className="toast" role="status">{toast}</div>}
+      {workspace.storageError && <div className="storage-alert" role="alert"><span>{workspace.storageError}</span><button onClick={workspace.clearStorageError}>Dismiss</button></div>}
+      <QuickGuide open={guideOpen} firstVisit={guideFirstVisit} onClose={closeGuide} onStart={() => { closeGuide(); navigate('build') }} />
     </div>
   )
 }

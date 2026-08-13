@@ -1,5 +1,5 @@
 import type { BuiltPrompt, CreationMode, PromptCollectionRecord, SavedPromptRecord, WorkspaceBackup, WorkspaceFilters, WorkspaceSort } from '../types'
-import { defaultSelections } from '../data/promptOptions'
+import { normalizeSelections } from '../utils/normalization'
 
 export const workspaceStorageKey = 'ga-prompt-workspace-v4'
 export const preferencesStorageKey = 'ga-workspace-preferences-v4'
@@ -37,10 +37,10 @@ export function validatePrompt(value: unknown): SavedPromptRecord | null {
   const mode = validModes.includes(item.creationMode as CreationMode) ? item.creationMode as CreationMode : 'Build With Me'
   return {
     ...item as SavedPromptRecord,
-    id: text(item.id), title: text(item.title, 'Untitled Prompt'), concept: text(item.concept), prompt: text(item.prompt),
+    id: text(item.id), title: text(item.title).trim() || 'Untitled Prompt', concept: text(item.concept), prompt: text(item.prompt), production: item.production === 'Sublimation' ? 'Sublimation' : 'DTF',
     creationMode: mode, createdAt: date(item.createdAt), updatedAt: date(item.updatedAt ?? item.createdAt),
     favorite: item.favorite === true, notes: text(item.notes), collectionId: text(item.collectionId) || undefined, collectionName: text(item.collectionName) || undefined,
-    selections: { ...defaultSelections, ...item.selections },
+    selections: normalizeSelections(item.selections, item.production === 'Sublimation' ? 'Sublimation' : 'DTF'),
   }
 }
 
@@ -49,7 +49,7 @@ export function validateCollection(value: unknown): PromptCollectionRecord | nul
   const item = value as Partial<PromptCollectionRecord>
   if (!text(item.id) || !text(item.name) || !Array.isArray(item.promptIds)) return null
   return {
-    id: text(item.id), name: text(item.name), description: text(item.description), promptIds: item.promptIds.filter((id): id is string => typeof id === 'string'),
+    id: text(item.id), name: text(item.name), description: text(item.description), promptIds: [...new Set(item.promptIds.filter((id): id is string => typeof id === 'string'))],
     sharedDna: Array.isArray(item.sharedDna) ? item.sharedDna.filter((entry): entry is string => typeof entry === 'string') : [],
     production: item.production === 'Sublimation' ? 'Sublimation' : 'DTF',
     intensity: ['Restrained', 'Polished', 'Bold', 'Extra', 'Audacious'].includes(text(item.intensity)) ? item.intensity! : 'Polished',

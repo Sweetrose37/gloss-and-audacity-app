@@ -17,8 +17,14 @@ function loadWorkspace(): StoredWorkspace {
 
 export function useWorkspace() {
   const [workspace, setWorkspace] = useState<StoredWorkspace>(loadWorkspace)
+  const [storageError, setStorageError] = useState<string | null>(null)
   const persist = useCallback((updater: (current: StoredWorkspace) => StoredWorkspace) => {
-    setWorkspace((current) => { const next = updater(current); localStorage.setItem(workspaceStorageKey, JSON.stringify(next)); return next })
+    setWorkspace((current) => {
+      const next = updater(current)
+      try { localStorage.setItem(workspaceStorageKey, JSON.stringify(next)); window.setTimeout(() => setStorageError(null), 0) }
+      catch { window.setTimeout(() => setStorageError('Your workspace changed on screen, but the browser could not save it. Export a backup and check storage permissions or available space.'), 0) }
+      return next
+    })
   }, [])
 
   const saveBuiltPrompt = useCallback((prompt: BuiltPrompt, creationMode: CreationMode, asNew = false, collection?: { id: string; name: string }) => {
@@ -52,5 +58,5 @@ export function useWorkspace() {
   const mergeBackup = useCallback((value: unknown) => { const backup = validateBackup(value); if (!backup) return false; persist((current) => mergeWorkspace(current.prompts, current.collections, backup)); return true }, [persist])
   const backup = useCallback((): WorkspaceBackup => ({ schema: 1, exportedAt: new Date().toISOString(), prompts: workspace.prompts, collections: workspace.collections }), [workspace])
 
-  return { ...workspace, saveBuiltPrompt, updatePrompt, removePrompt, duplicatePrompt: copyPrompt, saveCollection, updateCollection, removeCollection, duplicateCollection, addToCollection, removeFromCollection, mergeBackup, backup, preferencesStorageKey }
+  return { ...workspace, saveBuiltPrompt, updatePrompt, removePrompt, duplicatePrompt: copyPrompt, saveCollection, updateCollection, removeCollection, duplicateCollection, addToCollection, removeFromCollection, mergeBackup, backup, preferencesStorageKey, storageError, clearStorageError: () => setStorageError(null) }
 }

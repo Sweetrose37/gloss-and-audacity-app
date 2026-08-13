@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 
-export type NavId = 'home' | 'build' | 'shake' | 'idea' | 'remix' | 'collection' | 'saved' | 'sizing' | 'gallery' | 'account'
+export type NavId = 'home' | 'build' | 'shake' | 'idea' | 'remix' | 'collection' | 'saved' | 'sizing' | 'gallery'
 
 export interface NavItem {
   id: NavId
@@ -26,6 +26,8 @@ export interface ProjectState {
   selectedMood: string
   selectedPalette: string
   selectedEffect: string
+  selectedSkinTone: string
+  selectedHair: string
 }
 
 export type ProductionMode = 'DTF' | 'Sublimation'

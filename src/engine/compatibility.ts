@@ -32,7 +32,9 @@ export function ensureCompatible(selections: PromptSelections): PromptSelections
   }
   if (next.heroZone === next.supportZone) next.supportZone = next.heroZone === 'headline only' ? 'selected collage layer' : 'headline only'
   const objects = allowedSupportingObjects(next)
-  if (!objects.includes(next.supportingObject)) next.supportingObject = 'none'
+  const objectText = next.supportingObject.toLowerCase()
+  const requestedRestrictedObject = restrictedElements.some((term) => objectText.includes(term.replace(/s$/, '')) && userRequested(term, next))
+  if (!objects.includes(next.supportingObject) && !requestedRestrictedObject) next.supportingObject = 'none'
   return next
 }
 

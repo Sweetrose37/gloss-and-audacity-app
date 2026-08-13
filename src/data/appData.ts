@@ -1,6 +1,6 @@
 import {
   Bookmark, Box, FolderHeart, Home, Lightbulb, Maximize, PenLine,
-  RefreshCcw, Sparkles, UserRound, WandSparkles, Images, Ruler, Workflow,
+  RefreshCcw, Sparkles, WandSparkles, Images, Ruler, Workflow,
 } from 'lucide-react'
 import type { CreativeMode, NavItem } from '../types'
 
@@ -14,7 +14,6 @@ export const navItems: NavItem[] = [
   { id: 'saved', label: 'Saved Prompts', icon: Bookmark },
   { id: 'sizing', label: 'Sizing & Measurements', icon: Ruler },
   { id: 'gallery', label: 'Inspiration Gallery', icon: Images },
-  { id: 'account', label: 'My Account', icon: UserRound },
 ]
 
 export const creativeModes: CreativeMode[] = [
@@ -56,6 +55,5 @@ export const featurePages = {
   saved: { eyebrow: 'Your Archive', title: 'Saved Prompts', body: 'Your locally saved concepts, ready when inspiration strikes again.', icon: Bookmark },
   sizing: { eyebrow: 'Production Desk', title: 'Sizing & Measurements', body: 'Choose print-ready dimensions with confidence.', icon: Maximize },
   gallery: { eyebrow: 'Moodboard', title: 'Inspiration Gallery', body: 'A curated hit of color, attitude, and editorial energy.', icon: Images },
-  account: { eyebrow: 'Creative Profile', title: 'My Account', body: 'Your studio preferences and brand defaults, all in one place.', icon: UserRound },
   home: { eyebrow: '', title: '', body: '', icon: Sparkles },
 }

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { ProjectState } from '../types'
+import { normalizeProject } from '../utils/normalization'
 
 const storageKey = 'ga-current-project'
 const initialProject: ProjectState = {
@@ -12,30 +13,27 @@ const initialProject: ProjectState = {
   selectedMood: 'Boss Energy',
   selectedPalette: 'Plum Champagne',
   selectedEffect: 'Gold Glitter',
+  selectedSkinTone: '#7c4329',
+  selectedHair: 'Braids',
 }
 
 export function useLocalProject() {
   const [project, setProject] = useState<ProjectState>(() => {
     try {
       const saved = localStorage.getItem(storageKey)
-      return saved ? { ...initialProject, ...JSON.parse(saved) } : initialProject
+      return saved ? normalizeProject(JSON.parse(saved), initialProject) : initialProject
     } catch {
       return initialProject
     }
   })
   const [savedAt, setSavedAt] = useState<string | null>(null)
-
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(project))
-  }, [project])
-
   const updateProject = useCallback((changes: Partial<ProjectState>) => {
-    setProject((current) => ({ ...current, ...changes }))
+    setProject((current) => { const next = { ...current, ...changes }; try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch { /* Current screen state remains usable. */ } return next })
   }, [])
 
   const saveProject = useCallback(() => {
-    localStorage.setItem(storageKey, JSON.stringify(project))
-    setSavedAt(new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }))
+    try { localStorage.setItem(storageKey, JSON.stringify(project)); setSavedAt(new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })); return true }
+    catch { return false }
   }, [project])
 
   return { project, updateProject, saveProject, savedAt }

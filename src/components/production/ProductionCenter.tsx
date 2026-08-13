@@ -26,14 +26,15 @@ export function ProductionCenter({ prompt: incomingPrompt, savedPrompts, onBack,
   const [targetValue, setTargetValue] = useState('3600')
   const [selectedPromptId, setSelectedPromptId] = useState(incomingPrompt?.id || '')
   const [updatedPrompt, setUpdatedPrompt] = useState<BuiltPrompt | null>(null)
+  const [savedProductionCopy, setSavedProductionCopy] = useState(false)
   const activePrompt = incomingPrompt || savedPrompts.find((item) => item.id === selectedPromptId) || null
   const errors = validateDimensions(toNumber(pixelWidth), toNumber(pixelHeight), toNumber(ppi))
   const result = useMemo(() => calculateDimensions(toNumber(pixelWidth), toNumber(pixelHeight), toNumber(ppi)), [pixelWidth, pixelHeight, ppi])
   const required = requiredPixels(toNumber(inchWidth), toNumber(inchHeight), toNumber(ppi))
   const resized = proportionalResize(toNumber(originalWidth), toNumber(originalHeight), toNumber(targetValue), targetDimension)
-  const reset = () => { setPixelWidth(''); setPixelHeight(''); setPpi('300'); setInchWidth(''); setInchHeight(''); setOriginalWidth(''); setOriginalHeight(''); setTargetValue(''); setUpdatedPrompt(null); notify('Calculator reset. Your workspace remains untouched.') }
+  const reset = () => { setPixelWidth(''); setPixelHeight(''); setPpi('300'); setInchWidth(''); setInchHeight(''); setOriginalWidth(''); setOriginalHeight(''); setTargetValue(''); setUpdatedPrompt(null); setSavedProductionCopy(false); notify('Calculator reset. Your workspace remains untouched.') }
   const copyText = async (text: string, message: string) => { try { await navigator.clipboard.writeText(text); notify(message) } catch { notify('Copy was blocked by your browser.') } }
-  const addGuidance = () => { if (!activePrompt || !result) return; setUpdatedPrompt(appendProductionGuidance(activePrompt, result)) }
+  const addGuidance = () => { if (!activePrompt || !result) return; setUpdatedPrompt(appendProductionGuidance(activePrompt, result)); setSavedProductionCopy(false) }
   const mode: CreationMode = activePrompt && isSavedPrompt(activePrompt) ? activePrompt.creationMode : 'Build With Me'
 
   return (
@@ -91,8 +92,8 @@ export function ProductionCenter({ prompt: incomingPrompt, savedPrompts, onBack,
 
       <section className="panel prompt-production-card">
         <div className="production-section-heading"><div><p className="panel-label">Prompt-Specific Production</p><h2>Contextual Guidance</h2></div><Sparkles /></div>
-        {!incomingPrompt && savedPrompts.length > 0 && <label className="prompt-selector">Choose a saved prompt<select value={selectedPromptId} onChange={(event) => { setSelectedPromptId(event.target.value); setUpdatedPrompt(null) }}><option value="">Select prompt</option>{savedPrompts.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
-        {activePrompt ? <><h3>{activePrompt.title}</h3><div className="prompt-production-meta"><span>{activePrompt.production}</span><span>{activePrompt.selections.intensity}</span><span>{activePrompt.selections.composition}</span></div><ul>{promptProductionConsiderations(activePrompt).map((item) => <li key={item}>{item}</li>)}</ul>{result && !updatedPrompt && <button className="primary-button" onClick={addGuidance}>Add Production Guidance to Prompt</button>}{updatedPrompt && <div className="updated-prompt"><p>This is a new working copy. The original prompt has not been changed.</p><pre>{updatedPrompt.prompt}</pre><div><button className="gold-button" onClick={() => copyText(updatedPrompt.prompt, 'Updated prompt copied.')}><Copy size={15} /> Copy Updated Prompt</button><button className="outline-button" onClick={() => { onSaveAsNew(updatedPrompt, mode); notify('Production-guided copy saved as new.') }}>Save As New</button></div></div>}</> : <div className="production-empty"><Ruler /><p>Open the Production Center from a built or saved prompt for contextual recommendations, or select a saved prompt here.</p></div>}
+        {!incomingPrompt && savedPrompts.length > 0 && <label className="prompt-selector">Choose a saved prompt<select value={selectedPromptId} onChange={(event) => { setSelectedPromptId(event.target.value); setUpdatedPrompt(null); setSavedProductionCopy(false) }}><option value="">Select prompt</option>{savedPrompts.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
+        {activePrompt ? <><h3>{activePrompt.title}</h3><div className="prompt-production-meta"><span>{activePrompt.production}</span><span>{activePrompt.selections.intensity}</span><span>{activePrompt.selections.composition}</span></div><ul>{promptProductionConsiderations(activePrompt).map((item) => <li key={item}>{item}</li>)}</ul>{result && !updatedPrompt && <button className="primary-button" onClick={addGuidance}>Add Production Guidance to Prompt</button>}{updatedPrompt && <div className="updated-prompt"><p>This is a new working copy. The original prompt has not been changed.</p><pre>{updatedPrompt.prompt}</pre><div><button className="gold-button" onClick={() => copyText(updatedPrompt.prompt, 'Updated prompt copied.')}><Copy size={15} /> Copy Updated Prompt</button><button className="outline-button" disabled={savedProductionCopy} onClick={() => { onSaveAsNew(updatedPrompt, mode); setSavedProductionCopy(true); notify('Production-guided copy saved as new.') }}>{savedProductionCopy ? 'Saved As New' : 'Save As New'}</button></div></div>}</> : <div className="production-empty"><Ruler /><p>Open the Production Center from a built or saved prompt for contextual recommendations, or select a saved prompt here.</p></div>}
       </section>
       <button className="reset-calculator" onClick={reset}><RotateCcw size={15} /> Reset Calculator</button>
     </main>

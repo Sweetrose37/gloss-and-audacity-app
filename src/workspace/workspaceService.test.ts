@@ -75,11 +75,14 @@ describe('Phase 4 workspace service', () => {
 
   it('rejects malformed backups, fills missing fields, and resolves duplicate IDs', () => {
     expect(validateBackup({ nope: true })).toBeNull()
-    const sparse = { ...saved, selections: { phrase: 'EXACT' }, favorite: undefined, notes: undefined }
+    const sparse = { ...saved, production: 'broken', title: '', selections: { phrase: 'EXACT', hair: 42 }, favorite: undefined, notes: undefined }
     const backup = validateBackup({ prompts: [sparse, sparse], collections: [collection, collection], exportedAt: 'bad' })!
     expect(backup.prompts).toHaveLength(2)
     expect(new Set(backup.prompts.map((item) => item.id)).size).toBe(2)
     expect(backup.prompts[0].selections.intensity).toBe('Polished')
+    expect(backup.prompts[0].selections.hair).toBe(defaultSelections.hair)
+    expect(backup.prompts[0].production).toBe('DTF')
+    expect(backup.prompts[0].title).toBe('Untitled Prompt')
     expect(new Set(backup.collections.map((item) => item.id)).size).toBe(2)
   })
 

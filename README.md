@@ -1,6 +1,6 @@
 # GLOSS & AUDACITY™
 
-Black Women’s Graphic Prompt Studio — a responsive React + TypeScript application shell built from the approved dashboard prototype.
+Black Women’s Graphic Prompt Studio — Version 1.0 launch candidate. A responsive, local-first React + TypeScript studio for creating copy-ready production prompts.
 
 ## Run locally
 
@@ -16,7 +16,7 @@ npm run build
 npm run lint
 ```
 
-Phase 2 uses local browser state only and is strictly a prompt-building studio. It does not generate images or call paid APIs.
+The studio uses local browser state only. It creates prompts; it does not generate artwork, require accounts, or call paid APIs.
 
 ## Phase 2 workflows
 

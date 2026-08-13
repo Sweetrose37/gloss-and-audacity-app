@@ -17,9 +17,9 @@ interface SidebarProps {
 export function Sidebar({ active, open, project, onNavigate, onClose, onModeChange, onSizeChange, savedCount = 0 }: SidebarProps) {
   return (
     <>
-      <button className="mobile-menu" aria-label="Open menu" onClick={onClose}>{open ? <X /> : <Menu />}</button>
+      <button className="mobile-menu" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} aria-controls="studio-sidebar" onClick={onClose}>{open ? <X /> : <Menu />}</button>
       {open && <button className="sidebar-backdrop" aria-label="Close menu" onClick={onClose} />}
-      <aside className={`sidebar ${open ? 'is-open' : ''}`}>
+      <aside id="studio-sidebar" className={`sidebar ${open ? 'is-open' : ''}`}>
         <Brand />
         <nav className="main-nav" aria-label="Main navigation">
           {navItems.map((item) => {
@@ -46,7 +46,7 @@ export function Sidebar({ active, open, project, onNavigate, onClose, onModeChan
             <ChevronDown size={16} />
           </div>
           <p>{project.dpi} DPI</p>
-          <button className="outline-button">Change Size</button>
+          <button className="outline-button" onClick={() => onNavigate('sizing')}>Open Size Guide</button>
         </fieldset>
         <div className="brand-mantra">Gloss is the look.<br />Audacity is the attitude.</div>
       </aside>
