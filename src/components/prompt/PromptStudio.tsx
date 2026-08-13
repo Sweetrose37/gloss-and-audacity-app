@@ -19,9 +19,10 @@ interface PromptStudioProps {
   initialRemixPrompt?: string
   onSavePrompt: (prompt: BuiltPrompt, mode: CreationMode, asNew?: boolean) => SavedPromptRecord
   onSaveCollection: (name: string, description: string, prompts: BuiltPrompt[]) => { records: SavedPromptRecord[] }
+  onOpenProduction: (prompt: BuiltPrompt) => void
 }
 
-export function PromptStudio({ mode, production, onBack, onModeChange, notify, initialRemixPrompt = '', onSavePrompt, onSaveCollection }: PromptStudioProps) {
+export function PromptStudio({ mode, production, onBack, onModeChange, notify, initialRemixPrompt = '', onSavePrompt, onSaveCollection, onOpenProduction }: PromptStudioProps) {
   const { selections, setSelections, result, setResult } = usePromptStudio(production)
   const [collection, setCollection] = useState<BuiltPrompt[]>([])
   const [collectionIndex, setCollectionIndex] = useState(0)
@@ -40,7 +41,7 @@ export function PromptStudio({ mode, production, onBack, onModeChange, notify, i
   if (result) return (
     <main className="prompt-studio">
       {collection.length > 1 && <div className="collection-tabs">{collection.map((item, index) => <button key={item.id} className={index === collectionIndex ? 'active' : ''} onClick={() => { setCollectionIndex(index); setResult(item) }}>{index + 1}</button>)}</div>}
-      <PromptResultView result={result} onCopy={copy} onSave={save} onRemix={remix} onAnother={reset} onBack={reset} saveLabel={savedOnce ? 'Saved' : remixSeed ? 'Save As New' : 'Save Prompt'} />
+      <PromptResultView result={result} onCopy={copy} onSave={save} onRemix={remix} onAnother={reset} onBack={reset} onProduction={() => onOpenProduction(result)} saveLabel={savedOnce ? 'Saved' : remixSeed ? 'Save As New' : 'Save Prompt'} />
     </main>
   )
 
